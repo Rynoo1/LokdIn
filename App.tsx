@@ -1,20 +1,45 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
+import LoginScreen from './screens/LoginScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import { AuthProvider, useAuth } from './contexts/authContext';
 
-export default function App() {
+const stack = createNativeStackNavigator();
+
+function RootNavigator() {
+  const { user } = useAuth();
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      { user ? (
+        <stack.Navigator>
+          <stack.Screen name='Dashboard' component={} />
+        </stack.Navigator>
+      ): (
+        <stack.Navigator>
+          <stack.Screen name='Login' component={LoginScreen} />
+          <stack.Screen name='Register' component={RegisterScreen} />
+        </stack.Navigator>
+      )}
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <AuthProvider>
+      <RootNavigator />
+    </AuthProvider>
+  );
+}
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#fff',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+// });
