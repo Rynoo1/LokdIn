@@ -5,17 +5,18 @@ import { NavigationContainer } from '@react-navigation/native';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import { AuthProvider, useAuth } from './contexts/authContext';
+import Dashboard from './screens/Dashboard';
 
 const stack = createNativeStackNavigator();
 
 function RootNavigator() {
-  const { user } = useAuth();
+  const { user } = useAuth()!;
 
   return (
     <NavigationContainer>
       { user ? (
         <stack.Navigator>
-          <stack.Screen name='Dashboard' component={} />
+          <stack.Screen name='Dashboard' component={Dashboard} />
         </stack.Navigator>
       ): (
         <stack.Navigator>
