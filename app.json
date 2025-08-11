@@ -3,7 +3,7 @@
     "name": "LokdIn",
     "slug": "LokdIn",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "landscape",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
@@ -24,6 +24,20 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        { "photosPermission": "We need access to your photos for profile pictures" }
+      ],
+      [
+        "expo-av",
+        { "microphonePermission": "Allow LokdIn to access your microphone." }
+      ],
+      [
+        "expo-screen-orientation",
+        { "initialOrientation": "DEFAULT" }
+      ]
+    ]
   }
 }

@@ -6,19 +6,82 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import { AuthProvider, useAuth } from './contexts/authContext';
 import Dashboard from './screens/Dashboard';
+import * as ScreenOrientation from 'expo-screen-orientation';
+import { useEffect, useRef, useState } from 'react';
+import QuickUse from './screens/QuickUse';
+import Habit from './screens/Habit';
 
 const stack = createNativeStackNavigator();
 
 function RootNavigator() {
   const { user } = useAuth()!;
+  const [orientation, setOrientation] = useState<ScreenOrientation.Orientation | null>(null);
+  const [showDash, setShowDash] = useState(false);
+  const subscriptionRef = useRef<ScreenOrientation.Subscription | null>(null);
+  const hasCheckedOrientation = useRef(false);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const handleOrientationChange = (orientation: ScreenOrientation.Orientation) => {
+      console.log('Orientation changed:', orientation);
+      if (orientation === ScreenOrientation.Orientation.LANDSCAPE_LEFT ||
+          orientation === ScreenOrientation.Orientation.LANDSCAPE_RIGHT) {
+            console.log("switching to dashboard (landscape detected");
+            setShowDash(true);
+
+            if (subscriptionRef.current) {
+              console.log('Removing orientation listener');
+              ScreenOrientation.removeOrientationChangeListener(subscriptionRef.current);
+              subscriptionRef.current = null;
+            }
+        }
+    };
+
+    const init = async () => {
+      if (hasCheckedOrientation.current) return;
+
+      try {
+        const currentOrientation = await ScreenOrientation.getOrientationAsync();
+        console.log("Initial orientation:", currentOrientation);
+        hasCheckedOrientation.current = true;
+
+        handleOrientationChange(currentOrientation);
+
+        subscriptionRef.current = ScreenOrientation.addOrientationChangeListener((event) => {
+          handleOrientationChange(event.orientationInfo.orientation);
+        });
+        console.log("added orientation change listener");
+
+      } catch (error) {
+        console.error("Error getting orientation ", error);
+      }
+    };
+
+    init();
+
+    return () => {
+      if (subscriptionRef.current) {
+        console.log('Cleanup: Removing orientation listener');
+        ScreenOrientation.removeOrientationChangeListener(subscriptionRef.current);
+        subscriptionRef.current = null;
+      }
+    };
+  }, [user, showDash]);
 
   return (
     <NavigationContainer>
       { user ? (
-        <stack.Navigator>
-          <stack.Screen name='Dashboard' component={Dashboard} />
-        </stack.Navigator>
-      ): (
+          showDash ? (
+            <stack.Navigator>
+              <stack.Screen name='Habit' component={Habit} />
+            </stack.Navigator>
+          ) : (
+            <stack.Navigator>
+              <stack.Screen name='QuickAccess' component={QuickUse} />
+            </stack.Navigator>
+          )
+      ) : (
         <stack.Navigator>
           <stack.Screen name='Login' component={LoginScreen} />
           <stack.Screen name='Register' component={RegisterScreen} />

@@ -60,6 +60,21 @@ export const addReminders = async (userId: string, habitId: string, reminder: Re
     }
 }
 
+export const getHabitJournals= async (habitId: string) => {
+    try {
+        const journalsRef = collection(db, "habits", habitId, "journals");
+        const snapshot = await getDocs(journalsRef);
+
+        return snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+    } catch (error) {
+        console.error("Error fetching journals: ", error);
+        throw error;
+    }
+}
+
 //TODO: function to edit the goal streak
 
 //TODO: function to update the streak?

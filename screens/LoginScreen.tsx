@@ -1,8 +1,9 @@
 import { StyleSheet, Text, TextInput, Touchable, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/authContext';
+import * as ScreenOrientation from 'expo-screen-orientation';
 
 type RootStackParamList = {
     Register: undefined;
@@ -18,6 +19,14 @@ const LoginScreen = () => {
     const login = () => {
         loginUser(email, password);
     }
+
+    useEffect(() => {
+        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+
+        return () => {
+            ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+        }
+    }, []);
 
   return (
     <SafeAreaView>

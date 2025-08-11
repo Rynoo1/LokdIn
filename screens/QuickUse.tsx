@@ -1,15 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const Dashboard = () => {
-
+const QuickUse = () => {
   return (
     <View>
-      <Text>Dashboard</Text>
+      <Text>QuickUse</Text>
     </View>
   )
 }
 
-export default Dashboard
+export default QuickUse
 
 const styles = StyleSheet.create({})
