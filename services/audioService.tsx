@@ -2,6 +2,8 @@ import { Audio } from "expo-av";
 
 let recording: Audio.Recording | null = null;
 let currentSound: Audio.Sound | null = null;
+let currentUrl: string | null = null;
+let isPlaying = false;
 
 // Start recording audio
 export const startRecording = async (): Promise<void> => {
@@ -58,3 +60,36 @@ export const stopAudio = async () => {
         currentSound = null;
     }
 };
+
+
+// toggle audio playback - pause and resume if pressing the same link and stop and start if moving between recordings
+export const toggleAudio = async (url: string) => {
+    try {
+        if (currentSound && currentUrl === url) {
+            if (isPlaying) {
+                await currentSound.pauseAsync();
+                isPlaying = false;
+            } else {
+                await currentSound.playAsync();
+                isPlaying = true;
+            }
+            return;
+        }
+
+        if (currentSound) {
+            await currentSound.unloadAsync();
+            currentSound = null;
+            currentUrl = null;
+            isPlaying = false;
+        }
+
+        const { sound } = await Audio.Sound.createAsync({ uri: url });
+        currentSound = sound;
+        currentUrl = url;
+        isPlaying = true;
+        await sound.playAsync();
+
+    } catch (error) {
+        console.error("Error toggling audio playback", error);
+    }
+}

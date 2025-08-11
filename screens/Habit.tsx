@@ -15,41 +15,41 @@ type HabitRouteProp = RouteProp<{ Habit: HabitRouteParams }, 'Habit'>;
 
 const Habit = () => {
     const route = useRoute<HabitRouteProp>();
-    const habitId = "S8v1fwHArPXuNt1fs58DXOqodIQ2";
-    const { user } = useAuth();
-    const [isRecording, setIsRecording] = useState(false);
-    const [status, setStatus] = useState("");
+    const habitId = "miDd6V2kEBvximwn07Iv";
+    // const { user } = useAuth();
+    // const [isRecording, setIsRecording] = useState(false);
+    // const [status, setStatus] = useState("");
 
-    const handleStart = async () => {
-        try {
-            setStatus("Starting recording...");
-            await startRecording();
-            setIsRecording(true);
-            setStatus("Recording...");
-        } catch (error) {
-            setStatus((error as Error).message);
-        }
-    };
+    // const handleStart = async () => {
+    //     try {
+    //         setStatus("Starting recording...");
+    //         await startRecording();
+    //         setIsRecording(true);
+    //         setStatus("Recording...");
+    //     } catch (error) {
+    //         setStatus((error as Error).message);
+    //     }
+    // };
 
-    const handleStop = async () => {
-        try {
-            setStatus("Stopping recording...");
-            const uri = await stopRecording();
-            setIsRecording(false);
+    // const handleStop = async () => {
+    //     try {
+    //         setStatus("Stopping recording...");
+    //         const uri = await stopRecording();
+    //         setIsRecording(false);
 
-            setStatus("Uploading...");
-            const recName = `journal_${Date.now()}.m4a`;
-            const userId = user?.uid;
-            const downloadUrl = await uploadAudio(userId, uri, recName);
+    //         setStatus("Uploading...");
+    //         const recName = `journal_${Date.now()}.m4a`;
+    //         const userId = user?.uid;
+    //         const downloadUrl = await uploadAudio(userId, uri, recName);
 
-            setStatus("Upload complete!");
+    //         setStatus("Upload complete!");
 
-            console.log("File uploaded to: ", downloadUrl);
-        } catch (error) {
-            console.log("Error ", error);
-            setStatus("Error during stop/upload: " + (error as Error).message);
-        }
-    };
+    //         console.log("File uploaded to: ", downloadUrl);
+    //     } catch (error) {
+    //         console.log("Error ", error);
+    //         setStatus("Error during stop/upload: " + (error as Error).message);
+    //     }
+    // };
 
   return (
     <SafeAreaView>

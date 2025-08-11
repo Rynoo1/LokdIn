@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDocs, query, Timestamp, updateDoc, where } from "firebase/firestore/lite"
+import { addDoc, collection, doc, getDocs, query, Timestamp, updateDoc, where } from "firebase/firestore"
 import { db } from "../firebase"
 
 export interface HabitItem {
@@ -60,9 +60,9 @@ export const addReminders = async (userId: string, habitId: string, reminder: Re
     }
 }
 
-export const getHabitJournals= async (habitId: string) => {
+export const getHabitJournals= async (userId: string, habitId: string) => {
     try {
-        const journalsRef = collection(db, "habits", habitId, "journals");
+        const journalsRef = collection(db, "users", userId, "habits", habitId, "journals");
         const snapshot = await getDocs(journalsRef);
 
         return snapshot.docs.map(doc => ({

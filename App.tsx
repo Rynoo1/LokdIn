@@ -10,6 +10,7 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 import { useEffect, useRef, useState } from 'react';
 import QuickUse from './screens/QuickUse';
 import Habit from './screens/Habit';
+import { Audio } from 'expo-av';
 
 const stack = createNativeStackNavigator();
 

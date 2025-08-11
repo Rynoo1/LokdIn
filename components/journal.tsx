@@ -1,7 +1,7 @@
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { playAudio, startRecording, stopRecording } from '../services/audioService';
+import { playAudio, startRecording, stopRecording, toggleAudio } from '../services/audioService';
 import { useAuth } from '../contexts/authContext';
 import { uploadAudio } from '../services/bucketService';
 import { getHabitJournals } from '../services/DbService';
@@ -16,11 +16,12 @@ const Journal: React.FC<JournalProps> = ({ habitId }) => {
   const [status, setStatus] = useState("");
   const [journalEntries, setJournalEntries] = useState<any[]>([]);
 
+  const fetchData = async () => {
+    const data = await getHabitJournals(user?.uid, habitId);
+    setJournalEntries(data);
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-        const data = await getHabitJournals(habitId);
-        setJournalEntries(data);
-    }
     fetchData();
   }, [habitId]);
 
@@ -42,11 +43,12 @@ const handleStop = async () => {
         setIsRecording(false);
 
         setStatus("Uploading...");
-        const recName = `journal_${Date.now()}.m4a`;
+        const recName = `journal_${new Date().toISOString()}.m4a`;
         const userId = user?.uid;
-        const downloadUrl = await uploadAudio(userId, uri, recName);
+        const downloadUrl = await uploadAudio(userId, habitId, uri, recName);
         
         setStatus("Upload complete!");
+        fetchData();
 
         console.log("File uploaded to: ", downloadUrl);
     } catch (error) {
@@ -56,8 +58,8 @@ const handleStop = async () => {
 };
 
   return (
-    <SafeAreaView>
-        <View>
+    <SafeAreaView style={styles.container}>
+        <View style={styles.half}>
             {journalEntries.length === 0 ? (
                 <Text> No journal entries yet </Text>
             ) : (
@@ -65,16 +67,16 @@ const handleStop = async () => {
                     data={journalEntries}
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
-                        <TouchableOpacity onPress={() => playAudio(item.downloadUrl)}>
-                            <Text>{item.title}</Text>
+                        <TouchableOpacity style={{padding: 5}} onPress={() => toggleAudio(item.audioUrl)}>
+                            <Text>{item.name}</Text>
                         </TouchableOpacity>
                     )}
                 />
+                // <Text> Some journal entries </Text>
             )}
             
         </View>
-        <View>
-            <Text>Habits</Text>
+        <View style={styles.half}>
             {!isRecording ? (
                 <TouchableOpacity onPress={handleStart}>
                     <Text>Record Audio</Text>
@@ -92,4 +94,18 @@ const handleStop = async () => {
 
 export default Journal
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        flexDirection: 'row',
+    },
+    half: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderWidth: 1,
+        top: 20,
+        minHeight: 200,
+    },
+})

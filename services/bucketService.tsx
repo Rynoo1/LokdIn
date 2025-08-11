@@ -1,8 +1,9 @@
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage"
 import { storage } from "../firebase"
+import { db } from "../firebase";
+import { addDoc, collection } from "firebase/firestore";
 
-
-export const uploadAudio = async (userId: string, recordingUri: string, recName: string) => {
+export const uploadAudio = async (userId: string, habitId: string, recordingUri: string, recName: string) => {
 
     const storageRef = ref(storage, `${userId}/recordings/${recName}`);
 
@@ -23,6 +24,9 @@ export const uploadAudio = async (userId: string, recordingUri: string, recName:
 
     const uploadResult = await uploadBytes(storageRef, blob);
     const downloadUrl = await getDownloadURL(storageRef);
+
+    const journalsCollectionRef = collection(db, "users", userId, "habits", habitId, "journals");
+    await addDoc(journalsCollectionRef, {audioUrl: downloadUrl, name: recName});
 
     return downloadUrl;
 }
