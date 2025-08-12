@@ -1,7 +1,7 @@
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { playAudio, startRecording, stopRecording, toggleAudio } from '../services/audioService';
+import { startRecording, stopRecording, toggleAudio } from '../services/audioService';
 import { useAuth } from '../contexts/authContext';
 import { uploadAudio } from '../services/bucketService';
 import { getHabitJournals } from '../services/DbService';
