@@ -5,10 +5,13 @@ import { startRecording, stopRecording, toggleAudio } from '../services/audioSer
 import { useAuth } from '../contexts/authContext';
 import { uploadAudio } from '../services/bucketService';
 import { getHabitJournals } from '../services/DbService';
+import { Dimensions } from 'react-native';
 
 interface JournalProps {
     habitId: string;
 }
+
+const { width: screenWidth } = Dimensions.get('window');
 
 const Journal: React.FC<JournalProps> = ({ habitId }) => {
   const { user } = useAuth();
@@ -58,12 +61,14 @@ const handleStop = async () => {
 };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
         <View style={styles.half}>
             {journalEntries.length === 0 ? (
                 <Text> No journal entries yet </Text>
             ) : (
                 <FlatList
+                    style={{ width: '100%' }}
+                    contentContainerStyle={{ alignItems: 'center' }}
                     data={journalEntries}
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
@@ -72,7 +77,6 @@ const handleStop = async () => {
                         </TouchableOpacity>
                     )}
                 />
-                // <Text> Some journal entries </Text>
             )}
             
         </View>
@@ -88,7 +92,7 @@ const handleStop = async () => {
             )}
             
         </View>
-    </SafeAreaView>
+    </View>
   )
 }
 
@@ -96,16 +100,20 @@ export default Journal
 
 const styles = StyleSheet.create({
     container: {
+        width: screenWidth,
         flex: 1,
         justifyContent: 'center',
         flexDirection: 'row',
+        overflow: 'hidden',
+        backgroundColor: 'lightblue',
     },
     half: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1,
-        top: 20,
         minHeight: 200,
+        overflow: 'hidden',
+        backgroundColor: 'lightgreen',
     },
 })

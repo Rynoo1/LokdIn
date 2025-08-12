@@ -39,7 +39,7 @@ const Streaks: React.FC<StreakProps> = ({ habitId }) => {
     };
 
   return (
-    <View>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>Streak</Text>
       <TouchableOpacity onPress={updateStreak}>
         <Text>Increase Streak</Text>
@@ -52,3 +52,6 @@ const Streaks: React.FC<StreakProps> = ({ habitId }) => {
 export default Streaks
 
 const styles = StyleSheet.create({})
+
+//TODO: Add change goal button
+//TODO: Style
