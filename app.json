@@ -2,6 +2,9 @@
   "expo": {
     "name": "LokdIn",
     "slug": "LokdIn",
+    "assetBundlePatterns": [
+      "assets/fonts/*"
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,16 +31,23 @@
     "plugins": [
       [
         "expo-image-picker",
-        { "photosPermission": "We need access to your photos for profile pictures" }
+        {
+          "photosPermission": "We need access to your photos for profile pictures"
+        }
       ],
       [
         "expo-av",
-        { "microphonePermission": "Allow LokdIn to access your microphone." }
+        {
+          "microphonePermission": "Allow LokdIn to access your microphone."
+        }
       ],
       [
         "expo-screen-orientation",
-        { "initialOrientation": "DEFAULT" }
-      ]
+        {
+          "initialOrientation": "DEFAULT"
+        }
+      ],
+      "expo-font"
     ]
   }
 }

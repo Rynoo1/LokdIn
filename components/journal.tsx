@@ -1,23 +1,28 @@
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { startRecording, stopRecording, toggleAudio } from '../services/audioService';
 import { useAuth } from '../contexts/authContext';
 import { uploadAudio } from '../services/bucketService';
 import { getHabitJournals } from '../services/DbService';
 import { Dimensions } from 'react-native';
+import { Button } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 
 interface JournalProps {
     habitId: string;
 }
-
-const { width: screenWidth } = Dimensions.get('window');
 
 const Journal: React.FC<JournalProps> = ({ habitId }) => {
   const { user } = useAuth();
   const [isRecording, setIsRecording] = useState(false);
   const [status, setStatus] = useState("");
   const [journalEntries, setJournalEntries] = useState<any[]>([]);
+  const [playinStates, setPlayinStates] = useState<{ [key: string]: boolean }>({});
+
+  const { width: screenWidth } = Dimensions.get('window');
+  const insets = useSafeAreaInsets();
+  const safeWidth = screenWidth - insets.left - insets.right;
 
   const fetchData = async () => {
     const data = await getHabitJournals(user?.uid, habitId);
@@ -39,7 +44,7 @@ const Journal: React.FC<JournalProps> = ({ habitId }) => {
       }
   };
 
-const handleStop = async () => {
+  const handleStop = async () => {
     try {
         setStatus("Stopping recording...");
         const uri = await stopRecording();
@@ -58,39 +63,62 @@ const handleStop = async () => {
         console.log("Error ", error);
         setStatus("Error during stop/upload: " + (error as Error).message);
     }
-};
+  };
+
+  const handleToggle = async (id: string, audioUrl: string) => {
+    const playing = await toggleAudio(audioUrl, () => {
+        setPlayinStates((prev) => ({
+            ...prev,
+            [id]: false,
+        }));
+    });
+    
+    setPlayinStates((prev) => ({
+        ...prev,
+        [id]: playing,
+    }));
+  };
 
   return (
-    <View style={styles.container}>
-        <View style={styles.half}>
-            {journalEntries.length === 0 ? (
-                <Text> No journal entries yet </Text>
-            ) : (
-                <FlatList
-                    style={{ width: '100%' }}
-                    contentContainerStyle={{ alignItems: 'center' }}
-                    data={journalEntries}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity style={{padding: 5}} onPress={() => toggleAudio(item.audioUrl)}>
-                            <Text>{item.name}</Text>
-                        </TouchableOpacity>
-                    )}
-                />
-            )}
-            
-        </View>
-        <View style={styles.half}>
-            {!isRecording ? (
-                <TouchableOpacity onPress={handleStart}>
-                    <Text>Record Audio</Text>
-                </TouchableOpacity>
-            ) : (
-                <TouchableOpacity onPress={handleStop}>
-                    <Text>Stop Recording</Text>
-                </TouchableOpacity>
-            )}
-            
+    <View style={[styles.container, { width: safeWidth }]}>
+
+        <Text variant='headlineMedium' style={{ textAlign: 'center', marginBottom: 10 }}> Journal </Text>
+
+        <View style={styles.halvesContainer}>
+            <View style={styles.half}>
+                {journalEntries.length === 0 ? (
+                    <Text> No journal entries yet </Text>
+                ) : (
+                    <FlatList
+                        style={{ width: '100%' }}
+                        contentContainerStyle={{ alignItems: 'center' }}
+                        data={journalEntries}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => {
+                            const isPlaying = playinStates[item.id] || false;
+
+                            return (
+                                <Button 
+                                    icon={isPlaying ? "pause" : "play"}
+                                    mode='outlined' 
+                                    onPress={() => handleToggle(item.id, item.audioUrl)}
+                                    style={{ margin: 5 }}
+                                >
+                                    {item.name}
+                                </Button>
+                            );
+                        }}
+                    />
+                )}
+
+            </View>
+            <View style={[styles.half, { borderLeftWidth: 2 }]}>
+                {!isRecording ? (
+                    <Button icon='microphone' mode='contained-tonal' onPress={handleStart}> Record Audio </Button>
+                ) : (
+                    <Button icon='microphone-outline' mode='contained-tonal' onPress={handleStop}> Stop Recording </Button>
+                )}
+            </View>
         </View>
     </View>
   )
@@ -100,20 +128,22 @@ export default Journal
 
 const styles = StyleSheet.create({
     container: {
-        width: screenWidth,
         flex: 1,
-        justifyContent: 'center',
+        flexDirection: 'column',
+        marginTop: 10,
+        alignItems: 'center',
+    },
+    halvesContainer: {
+        flex: 1,
         flexDirection: 'row',
-        overflow: 'hidden',
-        backgroundColor: 'lightblue',
+        width: '100%',
     },
     half: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 1,
         minHeight: 200,
         overflow: 'hidden',
-        backgroundColor: 'lightgreen',
+        paddingTop: 20,
     },
 })

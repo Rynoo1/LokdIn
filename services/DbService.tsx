@@ -1,5 +1,6 @@
 import { addDoc, collection, doc, getDoc, getDocs, increment, query, Timestamp, updateDoc, where } from "firebase/firestore"
 import { db } from "../firebase"
+import { HabitStreakInfo } from "../types/habit"
 
 export interface HabitItem {
     title: string,
@@ -63,6 +64,7 @@ export const addReminders = async (userId: string, habitId: string, reminder: Re
     }
 }
 
+//get all journal entries for a specific habit
 export const getHabitJournals = async (userId: string, habitId: string) => {
     try {
         const journalsRef = collection(db, "users", userId, "habits", habitId, "journals");
@@ -75,6 +77,31 @@ export const getHabitJournals = async (userId: string, habitId: string) => {
     } catch (error) {
         console.error("Error fetching journals: ", error);
         throw error;
+    }
+}
+
+//get habit title, streak goal and currentstreak for all users habits
+export const getAllHabitStreak = async (userId: string): Promise<HabitStreakInfo[]> => {
+    try {
+        const ref = collection(db, "users", userId, "habits");
+        const snapshot = await getDocs(ref);
+
+        const habits = snapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id as string,
+                title: data.title as string,
+                goal: data.goal as number,
+                currentStreak: data.currentStreak as number,
+                completion: data.goal ? data.currentStreak / data.goal : 0,
+            };
+        });
+
+        return habits;
+
+    } catch (error) {
+        console.log("Error getting all tasks streak info: ", error);
+        return [];
     }
 }
 

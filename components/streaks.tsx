@@ -1,8 +1,9 @@
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import * as Progress from 'react-native-progress'
 import { checkAndIncrementStreak, getStreak } from '../services/DbService'
 import { useAuth } from '../contexts/authContext'
+import { Button, Text } from 'react-native-paper'
 
 interface StreakProps {
     habitId: string,
@@ -39,11 +40,9 @@ const Streaks: React.FC<StreakProps> = ({ habitId }) => {
     };
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Streak</Text>
-      <TouchableOpacity onPress={updateStreak}>
-        <Text>Increase Streak</Text>
-      </TouchableOpacity>
+    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <Text variant='headlineMedium' style={{ padding: 5 }}> Streak </Text>
+      <Button mode='outlined' onPress={updateStreak} style={{ marginTop: 10 }}>Increase Streak</Button>
       <Progress.Circle size={200} indeterminate={false} progress={streakCompletion} showsText={true} style={{marginTop: 20}} />
     </View>
   )

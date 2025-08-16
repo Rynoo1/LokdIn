@@ -1,4 +1,5 @@
 import { Audio } from "expo-av";
+import { useState } from "react";
 
 let recording: Audio.Recording | null = null;
 let currentSound: Audio.Sound | null = null;
@@ -63,7 +64,7 @@ export const stopAudio = async () => {
 
 
 // toggle audio playback - pause and resume if pressing the same link and stop and start if moving between recordings
-export const toggleAudio = async (url: string) => {
+export const toggleAudio = async (url: string, onFinish?: () => void): Promise<boolean> => {
     try {
         if (currentSound && currentUrl === url) {
             if (isPlaying) {
@@ -73,7 +74,7 @@ export const toggleAudio = async (url: string) => {
                 await currentSound.playAsync();
                 isPlaying = true;
             }
-            return;
+            return isPlaying;
         }
 
         if (currentSound) {
@@ -87,9 +88,19 @@ export const toggleAudio = async (url: string) => {
         currentSound = sound;
         currentUrl = url;
         isPlaying = true;
-        await sound.playAsync();
+        
+        sound.setOnPlaybackStatusUpdate((status) => {
+            if (!status.isLoaded) return;
+            if (status.didJustFinish) {
+                isPlaying = false;
+                if (onFinish) onFinish();
+            }
+        });
 
+        await sound.playAsync();
+        return isPlaying;
     } catch (error) {
         console.error("Error toggling audio playback", error);
+        return false;
     }
 }
