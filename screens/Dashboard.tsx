@@ -5,7 +5,7 @@ import { getAllHabitStreak } from '../services/DbService';
 import { useAuth } from '../contexts/authContext';
 import { HabitStreakInfo } from '../types/habit';
 import DashStreaks from '../components/dashStreaks';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Dashboard = () => {
 
@@ -13,6 +13,8 @@ const Dashboard = () => {
   const [habitStreaks, setHabitStreaks] = useState<HabitStreakInfo[]>([]);
 
   const { width: screenWidth } = Dimensions.get('window');
+  const insets = useSafeAreaInsets();
+  const safeWidth = screenWidth - insets.left - insets.right;
 
   useFocusEffect(
       React.useCallback(() => {
@@ -30,16 +32,16 @@ const Dashboard = () => {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#bdf26d59" }}>
       <ScrollView
         horizontal={true}
         pagingEnabled={true}
         showsHorizontalScrollIndicator={false}
-        snapToInterval={screenWidth}
+        snapToInterval={safeWidth}
         snapToAlignment='start'
         decelerationRate='fast'
       >
-        <View style={{ width: screenWidth }}>
+        <View style={{ width: safeWidth }}>
           <DashStreaks habitStreakData={habitStreaks} />
         </View>
 

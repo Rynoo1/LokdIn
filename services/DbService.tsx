@@ -88,18 +88,21 @@ export const getAllHabitStreak = async (userId: string): Promise<HabitStreakInfo
 
         const habits = snapshot.docs.map(doc => {
             const data = doc.data();
+            const { currentStreak = 0, goal } = data;
+            const completion = currentStreak / goal;
             return {
                 id: doc.id as string,
                 title: data.title as string,
                 goal: data.goal as number,
                 currentStreak: data.currentStreak as number,
-                completion: data.goal ? data.currentStreak / data.goal : 0,
+                completion: completion,
+                lastCompleted: data.dateLastStreak,
             };
         });
 
         return habits;
 
-    } catch (error) {
+    } catch (error) { 
         console.log("Error getting all tasks streak info: ", error);
         return [];
     }
