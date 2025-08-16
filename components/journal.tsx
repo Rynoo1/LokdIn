@@ -18,7 +18,7 @@ const Journal: React.FC<JournalProps> = ({ habitId }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [status, setStatus] = useState("");
   const [journalEntries, setJournalEntries] = useState<any[]>([]);
-  const [playinStates, setPlayinStates] = useState<{ [key: string]: boolean }>({});
+  const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null)
 
   const { width: screenWidth } = Dimensions.get('window');
   const insets = useSafeAreaInsets();
@@ -51,7 +51,7 @@ const Journal: React.FC<JournalProps> = ({ habitId }) => {
         setIsRecording(false);
 
         setStatus("Uploading...");
-        const recName = `journal_${new Date().toISOString()}.m4a`;
+        const recName = `journal_${new Date().toLocaleDateString()}.m4a`;
         const userId = user?.uid;
         const downloadUrl = await uploadAudio(userId, habitId, uri, recName);
         
@@ -67,16 +67,10 @@ const Journal: React.FC<JournalProps> = ({ habitId }) => {
 
   const handleToggle = async (id: string, audioUrl: string) => {
     const playing = await toggleAudio(audioUrl, () => {
-        setPlayinStates((prev) => ({
-            ...prev,
-            [id]: false,
-        }));
+        setCurrentlyPlaying(null);
     });
-    
-    setPlayinStates((prev) => ({
-        ...prev,
-        [id]: playing,
-    }));
+
+    setCurrentlyPlaying(playing ? id : null);
   };
 
   return (
@@ -95,7 +89,7 @@ const Journal: React.FC<JournalProps> = ({ habitId }) => {
                         data={journalEntries}
                         keyExtractor={(item) => item.id}
                         renderItem={({ item }) => {
-                            const isPlaying = playinStates[item.id] || false;
+                            const isPlaying = currentlyPlaying === item.id;
 
                             return (
                                 <Button 
