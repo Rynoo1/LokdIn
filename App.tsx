@@ -76,6 +76,7 @@ function RootNavigator() {
           showDash ? (
             <stack.Navigator>
               <stack.Screen name='Dashboard' component={Dashboard} />
+              <stack.Screen name='Habit' component={Habit} />
             </stack.Navigator>
           ) : (
             <stack.Navigator>

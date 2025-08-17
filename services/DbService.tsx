@@ -1,6 +1,6 @@
 import { addDoc, collection, doc, getDoc, getDocs, increment, query, Timestamp, updateDoc, where } from "firebase/firestore"
 import { db } from "../firebase"
-import { HabitStreakInfo } from "../types/habit"
+import { ExtendedHabitInfo, HabitStreakInfo } from "../types/habit"
 
 export interface HabitItem {
     title: string,
@@ -80,10 +80,10 @@ export const getHabitJournals = async (userId: string, habitId: string) => {
     }
 }
 
-//get habit title, streak goal and currentstreak for all users habits
-export const getAllHabitStreak = async (userId: string): Promise<HabitStreakInfo[]> => {
+//get habit title, streak goal and currentstreak for habits for one user
+export const getAllHabitStreak = async (userId: string): Promise<ExtendedHabitInfo[]> => {
     try {
-        const ref = collection(db, "users", userId, "habits");
+        const ref = collection(db, "users", userId, "habits"); 
         const snapshot = await getDocs(ref);
 
         const habits = snapshot.docs.map(doc => {
@@ -97,6 +97,10 @@ export const getAllHabitStreak = async (userId: string): Promise<HabitStreakInfo
                 currentStreak: data.currentStreak as number,
                 completion: completion,
                 lastCompleted: data.dateLastStreak,
+                journalCount: data.journalCount,
+                completed: data.completed,
+                longestStreak: data.longestStreak,
+                reminders: data.remindersOn,
             };
         });
 
@@ -138,10 +142,11 @@ export const checkAndIncrementStreak = async (userId: string, habitId: string) =
     }
 
     const streakData = streakSnap.data();
-    const { currentStreak = 0, dateLastStreak } = streakData;
+    const { currentStreak = 0, dateLastStreak, longestStreak } = streakData;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    console.log(longestStreak);
 
     if (!dateLastStreak) {
         await updateDoc(streakRef, {
@@ -158,13 +163,25 @@ export const checkAndIncrementStreak = async (userId: string, habitId: string) =
     const lastStreakDate = dateLastStreak.toDate();
     lastStreakDate.setHours(0, 0, 0, 0);
 
-    const daysDifference = Math.floor((today.getTime() - lastStreakDate.getTime()) / (1000 * 60 * 24));
+    const daysDifference = Math.floor((today.getTime() - lastStreakDate.getTime()) / (1000 * 60 * 60 * 24));
 
     if (daysDifference === 0) {
         return {
             streakIncremented: false,
             currentStreak,
             message: "Streak already incremented today"
+        };
+    } else if (daysDifference === 1 && currentStreak > longestStreak ) {
+        const newStreak = currentStreak + 1;
+        await updateDoc(streakRef, {
+            currentStreak: newStreak,
+            dateLastStreak: Timestamp.fromDate(new Date()),
+            longestStreak: newStreak
+        });
+        return {
+            streakIncremented: true,
+            currentStreak: newStreak,
+            message: `Streak is now ${newStreak} days!`
         };
     } else if (daysDifference === 1) {
         const newStreak = currentStreak + 1;

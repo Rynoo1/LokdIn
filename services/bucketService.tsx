@@ -1,7 +1,7 @@
 import { deleteObject, getDownloadURL, ref, uploadBytes } from "firebase/storage"
 import { storage } from "../firebase"
 import { db } from "../firebase";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, increment, updateDoc } from "firebase/firestore";
 
 export const uploadAudio = async (userId: string, habitId: string, recordingUri: string, recName: string) => {
 
@@ -27,6 +27,11 @@ export const uploadAudio = async (userId: string, habitId: string, recordingUri:
 
     const journalsCollectionRef = collection(db, "users", userId, "habits", habitId, "journals");
     await addDoc(journalsCollectionRef, {audioUrl: downloadUrl, name: recName});
+
+    const habitDocRef = doc(db, "users", userId, "habits", habitId);
+    await updateDoc(habitDocRef, {
+        journalCount: increment(1)
+    });
 
     return downloadUrl;
 }

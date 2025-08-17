@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/authContext'
 import { Button, Text } from 'react-native-paper'
 
 interface StreakProps {
-    habitId: string,
+    habitId: string;
 }
 
 const Streaks: React.FC<StreakProps> = ({ habitId }) => {

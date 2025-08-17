@@ -11,18 +11,15 @@ import { Text } from 'react-native-paper';
 
 interface JournalProps {
     habitId: string;
+    safeWidth: number;
 }
 
-const Journal: React.FC<JournalProps> = ({ habitId }) => {
+const Journal: React.FC<JournalProps> = ({ habitId, safeWidth }) => {
   const { user } = useAuth();
   const [isRecording, setIsRecording] = useState(false);
   const [status, setStatus] = useState("");
   const [journalEntries, setJournalEntries] = useState<any[]>([]);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null)
-
-  const { width: screenWidth } = Dimensions.get('window');
-  const insets = useSafeAreaInsets();
-  const safeWidth = screenWidth - insets.left - insets.right;
 
   const fetchData = async () => {
     const data = await getHabitJournals(user?.uid, habitId);
@@ -51,7 +48,7 @@ const Journal: React.FC<JournalProps> = ({ habitId }) => {
         setIsRecording(false);
 
         setStatus("Uploading...");
-        const recName = `journal_${new Date().toLocaleDateString()}.m4a`;
+        const recName = `Journal-${new Date().toLocaleDateString()}.m4a`;
         const userId = user?.uid;
         const downloadUrl = await uploadAudio(userId, habitId, uri, recName);
         
@@ -83,26 +80,29 @@ const Journal: React.FC<JournalProps> = ({ habitId }) => {
                 {journalEntries.length === 0 ? (
                     <Text> No journal entries yet </Text>
                 ) : (
-                    <FlatList
-                        style={{ width: '100%' }}
-                        contentContainerStyle={{ alignItems: 'center' }}
-                        data={journalEntries}
-                        keyExtractor={(item) => item.id}
-                        renderItem={({ item }) => {
-                            const isPlaying = currentlyPlaying === item.id;
+                    // <View>
 
-                            return (
-                                <Button 
-                                    icon={isPlaying ? "pause" : "play"}
-                                    mode='outlined' 
-                                    onPress={() => handleToggle(item.id, item.audioUrl)}
-                                    style={{ margin: 5 }}
-                                >
-                                    {item.name}
-                                </Button>
-                            );
-                        }}
-                    />
+                        <FlatList
+                            style={{ width: '100%' }}
+                            contentContainerStyle={{ alignItems: 'center' }}
+                            data={journalEntries}
+                            keyExtractor={(item) => item.id}
+                            renderItem={({ item }) => {
+                                const isPlaying = currentlyPlaying === item.id;
+
+                                return (
+                                    <Button 
+                                        icon={isPlaying ? "pause" : "play"}
+                                        mode='outlined' 
+                                        onPress={() => handleToggle(item.id, item.audioUrl)}
+                                        style={{ margin: 5 }}
+                                    >
+                                        {item.name}
+                                    </Button>
+                                );
+                            }}
+                        />
+
                 )}
 
             </View>

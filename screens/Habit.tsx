@@ -1,9 +1,9 @@
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../contexts/authContext';
 import Journal from '../components/journal';
-import { useRoute, RouteProp } from '@react-navigation/native';
+import { useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
 import Streaks from '../components/streaks';
 import { Dimensions } from 'react-native';
 import { Text } from 'react-native-paper';
@@ -19,19 +19,25 @@ const Habit = () => {
     const route = useRoute<HabitRouteProp>();
     const habitId = "miDd6V2kEBvximwn07Iv";
 
-    const { width: screenWidth } = Dimensions.get('window');
+    const [safeWidth, setSafeWidth] = useState(0);
     const insets = useSafeAreaInsets();
-    const safeWidth = screenWidth - insets.left - insets.right;
 
     const subScreens = [
         { id: 'journal' },
         { id: 'streaks' }
     ]
 
+    useFocusEffect(
+        useCallback(() => {
+            const { width: screenWidth } = Dimensions.get('window');
+            setSafeWidth(screenWidth - insets.left - insets.right);
+        },[insets.left, insets.right])
+    );
+
     const renderScreens = ({ item }: { item: any }) => {
         return (
             <View style={{ width: safeWidth }}>
-                {item.id === 'journal' && <Journal habitId={habitId} />}
+                {item.id === 'journal' && <Journal habitId={habitId} safeWidth={safeWidth} />}
                 {item.id === 'streaks' && <Streaks habitId={habitId} />}
             </View>
         );

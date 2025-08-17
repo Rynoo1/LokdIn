@@ -8,3 +8,10 @@ export type HabitStreakInfo = {
     completion: number;
     lastCompleted: Timestamp;
 }
+
+export type ExtendedHabitInfo = HabitStreakInfo & {
+    journalCount: number;
+    completed: boolean;
+    longestStreak: number;
+    reminders: boolean;
+}

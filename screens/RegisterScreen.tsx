@@ -1,32 +1,37 @@
 import { StyleSheet, Text, TextInput, Touchable, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../contexts/authContext';
 import * as ScreenOrientation from 'expo-screen-orientation';
-
-type RootStackParamList = {
-    Login: undefined;
-};
+import { AuthStackParamList } from '../types/navigation';
 
 const RegisterScreen = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+    const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
 
     const { registerUser } = useAuth()!;
     const register = () => {
         registerUser(email, password);
     }
 
-    useEffect(() => {
-        ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+    useFocusEffect(
+        useCallback(() => {
+            ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
 
-        return () => {
-            ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-        }
-    }, []);
+                return () => {
+
+                };
+        }, [])
+    );
+        
+        // return () => {
+        //     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+        // }
+    // };
 
   return (
     <SafeAreaView>
@@ -51,7 +56,7 @@ const RegisterScreen = () => {
                 <Text>Register</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <TouchableOpacity onPress={() => navigation.replace("Login")}>
                 <Text>Login</Text>
             </TouchableOpacity>               
 
