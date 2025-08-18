@@ -20,7 +20,11 @@ const DashStreaks = ({ habitStreakData, safeWidth }: { habitStreakData: HabitStr
                     <View style={[styles.container, { width: safeWidth }]}>
                         <TouchableOpacity style={[styles.half, { width: safeWidth }]} onPress={() => navigation.navigate("Habit", { habitId: `${item.id}` })}>
                             <Text variant='titleLarge'>Streak Progress</Text>
-                            <Progress.Circle size={200} color='#0554F2' indeterminate={false} progress={item.completion} showsText={true} style={{ marginTop: 20 }} />
+                            { item ? (
+                                <Progress.Circle size={200} color='#0554F2' animated={true} indeterminate={false} progress={item.completion} showsText formatText={() => `${Math.round(item.completion * 100)}%`}  style={{ marginTop: 20 }} />
+                            ) : (
+                                <Text>Loading</Text>
+                            )}
                             {/* <Text variant='titleSmall' style={{ color: "#052608ff" }}>Current</Text> */}
                         </TouchableOpacity>                        
                         <TouchableOpacity style={[styles.half, { width: safeWidth }]} onPress={() => navigation.navigate("Habit", { habitId: `${item.id}` })}>
@@ -33,7 +37,7 @@ const DashStreaks = ({ habitStreakData, safeWidth }: { habitStreakData: HabitStr
                 </View>
             </View>
         );
-    }, []);
+    }, [safeWidth, navigation]);
 
   return (
     <View style={[styles.container, { width: safeWidth }]}>
@@ -41,6 +45,7 @@ const DashStreaks = ({ habitStreakData, safeWidth }: { habitStreakData: HabitStr
             data={habitStreakData}
             keyExtractor={(item) => item.id}
             renderItem={streakRenderItem}
+            extraData={habitStreakData}
         />
     </View>
 

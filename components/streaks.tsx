@@ -4,12 +4,15 @@ import * as Progress from 'react-native-progress'
 import { checkAndIncrementStreak, getStreak } from '../services/DbService'
 import { useAuth } from '../contexts/authContext'
 import { Button, Text } from 'react-native-paper'
+import HabitOverview from './habitOverview'
+import EditHabit from './editHabit'
 
 interface StreakProps {
     habitId: string;
+    safeWidth: number;
 }
 
-const Streaks: React.FC<StreakProps> = ({ habitId }) => {
+const Streaks: React.FC<StreakProps> = ({ habitId, safeWidth }) => {
     const { user } = useAuth();
     const [streakCompletion, setStreakCompletion] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -40,17 +43,44 @@ const Streaks: React.FC<StreakProps> = ({ habitId }) => {
     };
 
   return (
-    <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-      <Text variant='headlineMedium' style={{ padding: 5 }}> Streak </Text>
-      <Button mode='outlined' onPress={updateStreak} style={{ marginTop: 10 }}>Increase Streak</Button>
-      <Progress.Circle size={200} indeterminate={false} progress={streakCompletion} showsText={true} style={{marginTop: 20}} />
+    <View style={[styles.container2, { width: safeWidth }]}>
+        <View style={styles.halvesContainer2}>
+            <View style={[styles.half2, { borderRightWidth: 2 }]}>
+              <Text variant='headlineMedium'> Streak </Text>
+              <Button mode='outlined' onPress={updateStreak} style={{ marginTop: 5 }}>Increase Streak</Button>
+              <Progress.Circle size={180} indeterminate={false} progress={streakCompletion} showsText={true} style={{marginTop: 10}} />
+            </View>
+            <View style={styles.half2}>
+                <EditHabit />
+                <Button mode='contained-tonal'>Edit</Button>
+            </View>
+        </View>
     </View>
+
   )
 }
 
 export default Streaks
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    container2: {
+        flexDirection: 'column',
+        marginTop: 10,
+        alignItems: 'center',
+    },
+    halvesContainer2: {
+        flexDirection: 'row',
+        width: '100%',
+    },
+    half2: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: 200,
+        overflow: 'hidden',
+        paddingTop: 20,
+    },
+})
 
 //TODO: Add change goal button
 //TODO: Style

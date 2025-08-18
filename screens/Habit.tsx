@@ -38,7 +38,7 @@ const Habit = () => {
         return (
             <View style={{ width: safeWidth }}>
                 {item.id === 'journal' && <Journal habitId={habitId} safeWidth={safeWidth} />}
-                {item.id === 'streaks' && <Streaks habitId={habitId} />}
+                {item.id === 'streaks' && <Streaks habitId={habitId} safeWidth={safeWidth} />}
             </View>
         );
     };

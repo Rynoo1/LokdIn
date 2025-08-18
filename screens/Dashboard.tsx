@@ -1,4 +1,4 @@
-import { Dimensions, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Dimensions, ScrollView, StyleSheet, View } from 'react-native'
 import React, { useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import { getAllHabitStreak } from '../services/DbService';
@@ -8,6 +8,7 @@ import DashStreaks from '../components/dashStreaks';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import AllHabits from '../components/allHabits';
+import { Text } from 'react-native-paper';
 
 const Dashboard = () => {
 

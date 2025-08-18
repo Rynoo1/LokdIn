@@ -14,7 +14,7 @@ const AllHabits = ({ habitData }: { habitData: ExtendedHabitInfo[] }) => {
         <Text variant='headlineMedium' style={{ textAlign: 'center', marginBottom: 10 }}>All Habits</Text>
 
         <View style={styles.container}>
-            <Text variant='titleMedium' style={{ flex: 1 }}> Habit </Text>
+            <Text variant='titleMedium' style={{ flex: 2 }}> Habit </Text>
             <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}> Goal </Text>
             <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}> Current </Text>
             <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}> Longest </Text>
@@ -31,7 +31,7 @@ const AllHabits = ({ habitData }: { habitData: ExtendedHabitInfo[] }) => {
                     }}
                 >
                     <View style={styles.content}>
-                        <Text variant='titleLarge'>{item.title}</Text>
+                        <Text variant='titleMedium' style={{ flex: 1 }}>{item.title}</Text>
                         <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}>{item.goal}</Text>
                         <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}>{item.currentStreak}</Text>
                         <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}>{item.longestStreak}</Text>
