@@ -1,13 +1,53 @@
 import { StyleSheet, View } from 'react-native'
-import React from 'react'
-import { Text, TextInput } from 'react-native-paper'
+import React, { useState } from 'react'
+import { Button, Switch, Text, TextInput } from 'react-native-paper'
+import { editHabitData, HabitItem } from '../services/DbService'
+import { useAuth } from '../contexts/authContext'
+import { useNavigation } from '@react-navigation/native'
 
-const EditHabit = () => {
+interface EditProps {
+    safeWidth: number,
+    habitItem: HabitItem,
+    onSaveSuccess: () => void
+}
+
+const EditHabit: React.FC<EditProps> = ({ safeWidth, habitItem, onSaveSuccess }) => {
+    const { user } = useAuth();
+    const [isSwitchOn, setIsSwitchOn] = useState<boolean>(habitItem.reminders!);
+    const [title, setTitle] = useState(habitItem.title || "");
+    const [goal, setGoal] = useState(habitItem.goal?.toString() || "0");
+    const width = safeWidth/2;
+    const onToggleSwtich = () => setIsSwitchOn(!isSwitchOn);
+
+    const updateHabit = async () => {
+        if (!user || !habitItem.id) return;
+
+        const updatedHabit: HabitItem = {
+            id: habitItem.id,
+            title: title,
+            goal: Number(goal),
+            reminders: isSwitchOn,
+        };
+
+        const success = await editHabitData(user.uid, updatedHabit);
+
+        if (success) {
+            console.log("Habit updated successfully!");
+            onSaveSuccess();
+        } else {
+            console.log("Failed to update habit");
+        }
+    }
   return (
-    <View style={{ flex: 1 }}>
-      <Text variant='headlineMedium'>EditHabit</Text>
-      <TextInput mode='outlined' label="email" value='email' />
-      <TextInput mode='outlined' label="notemail" value='email' />
+    <View style={{ flex: 1, width: width, paddingHorizontal: 20 }}>
+        <View>
+            <Text variant='headlineMedium' style={{ textAlign: 'center' }}>Edit Habit</Text>
+            <TextInput style={{ marginVertical: 5 }} mode='outlined' label='Title' value={title} onChangeText={setTitle} />
+            <TextInput mode='outlined' keyboardType='numeric' label='Goal' value={goal} onChangeText={setGoal} />
+            <Text variant='titleMedium' style={{ marginVertical: 5, textAlign: 'center' }}>Reminders</Text>
+            <Switch style={{ alignSelf: 'center' }} value={isSwitchOn} onValueChange={onToggleSwtich} />
+            <Button mode='contained-tonal' style={{ marginHorizontal: 100, marginTop: 10 }} onPress={updateHabit}>Submit</Button>
+        </View>
     </View>
   )
 }

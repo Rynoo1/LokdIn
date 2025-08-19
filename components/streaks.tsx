@@ -1,9 +1,9 @@
 import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import * as Progress from 'react-native-progress'
-import { checkAndIncrementStreak, getStreak } from '../services/DbService'
+import { checkAndIncrementStreak, getStreak, HabitItem } from '../services/DbService'
 import { useAuth } from '../contexts/authContext'
-import { Button, Text } from 'react-native-paper'
+import { Button, Text, TextInput } from 'react-native-paper'
 import HabitOverview from './habitOverview'
 import EditHabit from './editHabit'
 
@@ -14,19 +14,28 @@ interface StreakProps {
 
 const Streaks: React.FC<StreakProps> = ({ habitId, safeWidth }) => {
     const { user } = useAuth();
+    const [editing, setEditing] = useState(false);
     const [streakCompletion, setStreakCompletion] = useState(0);
+    const [data, setData] = useState({})
     const [loading, setLoading] = useState(true);
+    const [habitData, setHabitData] = useState();
 
     const fetchStreakData = async () => {
         try {
             setLoading(true);
             const completion = await getStreak(user?.uid, habitId);
-            setStreakCompletion(completion);
+            setStreakCompletion(completion.completion!);
+            const habitWithId: HabitItem = {
+                ...completion,
+                id: habitId,
+            };
+            setStreakCompletion(habitWithId.completion!);
+            setData(habitWithId);
             setLoading(false);
         } catch (error) {
             console.log("Error ", error);
         }
-    };    
+    };
 
     useEffect(() => {
         fetchStreakData();
@@ -50,9 +59,15 @@ const Streaks: React.FC<StreakProps> = ({ habitId, safeWidth }) => {
               <Button mode='outlined' onPress={updateStreak} style={{ marginTop: 5 }}>Increase Streak</Button>
               <Progress.Circle size={180} indeterminate={false} progress={streakCompletion} showsText={true} style={{marginTop: 10}} />
             </View>
-            <View style={styles.half2}>
-                <EditHabit />
-                <Button mode='contained-tonal'>Edit</Button>
+            <View style={styles.half2 }>
+                {editing ? (
+                    <EditHabit safeWidth={safeWidth} habitItem={data} onSaveSuccess={() => {
+                        setEditing(false);
+                        fetchStreakData();
+                    }} />
+                ) : (
+                    <Button mode='contained-tonal' style={{ paddingHorizontal: 10 }} onPress={() => setEditing(true)}>Edit Habit</Button>
+                )}
             </View>
         </View>
     </View>

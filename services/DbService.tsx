@@ -3,14 +3,16 @@ import { db } from "../firebase"
 import { ExtendedHabitInfo, HabitStreakInfo } from "../types/habit"
 
 export interface HabitItem {
-    title: string,
-    goal: number,
-    reminders: boolean,
-    currentDate: Timestamp,
-    endDate: Timestamp,
-    currentStreak: number,
-    longestStreak: number,
-    completed: boolean
+    id?: string,
+    title?: string,
+    goal?: number,
+    reminders?: boolean,
+    currentDate?: Timestamp,
+    endDate?: Timestamp,
+    currentStreak?: number,
+    longestStreak?: number,
+    completed?: boolean,
+    completion?: number,
 }
 
 export interface ReminderItem {
@@ -80,7 +82,7 @@ export const getHabitJournals = async (userId: string, habitId: string) => {
     }
 }
 
-//get habit title, streak goal and currentstreak for habits for one user
+//get habit title, streak goal and currentstreak for all habits for one user
 export const getAllHabitStreak = async (userId: string): Promise<ExtendedHabitInfo[]> => {
     try {
         const ref = collection(db, "users", userId, "habits"); 
@@ -115,7 +117,7 @@ export const getAllHabitStreak = async (userId: string): Promise<ExtendedHabitIn
 //TODO: function to edit the goal streak
 
 // get streak data and convert to %
-export const getStreak = async (userId: string, habitId: string) => {
+export const getStreak = async (userId: string, habitId: string): Promise<HabitItem> => {
     const streakRef = doc(db, "users", userId, "habits", habitId);
     const streakSnap = await getDoc(streakRef);
 
@@ -128,9 +130,37 @@ export const getStreak = async (userId: string, habitId: string) => {
 
     const completion = currentStreak / goal;
 
-    return completion;
+    const habitItem: HabitItem = {
+        title: streakData.title,
+        goal: streakData.goal,
+        reminders: streakData.remindersOn,
+        completion: completion
+    };
+
+    return habitItem;
 }
 
+// edit habit data
+export const editHabitData = async (userId: string, habitItem: HabitItem) => {
+    const habitRef = doc(db, "users", userId, "habits", habitItem.id!);
+    const refSnap = await getDoc(habitRef);
+
+    if (!refSnap.exists()) {
+        throw new Error('Habit doc not found - ensure all data is passed!');
+    }
+
+    try {
+        await updateDoc(habitRef, {
+            title: habitItem.title,
+            goal: habitItem.goal,
+            reminders: habitItem.reminders
+        });
+        return true
+    } catch (error) {
+        console.log('Error ', error);
+        return false
+    }
+}
 
 // check if when last streak has been incremented and either update or reset streak
 export const checkAndIncrementStreak = async (userId: string, habitId: string) => {

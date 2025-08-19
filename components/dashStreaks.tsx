@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Animated, Dimensions, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useCallback } from 'react'
 import * as Progress from 'react-native-progress'
 import { HabitStreakInfo } from "../types/habit";
@@ -20,11 +20,7 @@ const DashStreaks = ({ habitStreakData, safeWidth }: { habitStreakData: HabitStr
                     <View style={[styles.container, { width: safeWidth }]}>
                         <TouchableOpacity style={[styles.half, { width: safeWidth }]} onPress={() => navigation.navigate("Habit", { habitId: `${item.id}` })}>
                             <Text variant='titleLarge'>Streak Progress</Text>
-                            { item ? (
-                                <Progress.Circle size={200} color='#0554F2' animated={true} indeterminate={false} progress={item.completion} showsText formatText={() => `${Math.round(item.completion * 100)}%`}  style={{ marginTop: 20 }} />
-                            ) : (
-                                <Text>Loading</Text>
-                            )}
+                            <Progress.Circle size={200} color='#0554F2' animated={true} indeterminate={false} progress={item.completion} showsText formatText={() => `${Math.round(item.completion * 100)}%`}  style={{ marginTop: 20 }} />
                             {/* <Text variant='titleSmall' style={{ color: "#052608ff" }}>Current</Text> */}
                         </TouchableOpacity>                        
                         <TouchableOpacity style={[styles.half, { width: safeWidth }]} onPress={() => navigation.navigate("Habit", { habitId: `${item.id}` })}>
