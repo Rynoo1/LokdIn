@@ -1,9 +1,10 @@
 import { StyleSheet, View } from 'react-native'
 import React, { useState } from 'react'
-import { FAB, Text, TextInput, Switch, Button } from 'react-native-paper'
+import { FAB, Text, TextInput, Switch, Button, SegmentedButtons } from 'react-native-paper'
 import { AddHabitItem, createHabit } from '../services/DbService';
 import { Timestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/authContext';
+import { TimeSlot } from '../utils/timeSlots';
 
 const AddHabit = ({ onAddSuccess }: { onAddSuccess: () => void }) => {
     const { user } = useAuth();
@@ -11,6 +12,15 @@ const AddHabit = ({ onAddSuccess }: { onAddSuccess: () => void }) => {
     const [showAdd, setShowAdd] = useState(false);
     const [title, setTitle] = useState("");
     const [goal, setGoal] = useState("");
+    const [value, setValue] = useState<TimeSlot>("morning");
+
+    const reset = () => {
+        setTitle("");
+        setGoal("");
+        setValue("morning");
+        setIsSwitchOn(false);
+        setShowAdd(false);
+    }
 
     const newHabit = async () => {
         if (!title || !goal) {
@@ -24,6 +34,7 @@ const AddHabit = ({ onAddSuccess }: { onAddSuccess: () => void }) => {
             title: title!,
             goal: Number(goal),
             remindersOn: isSwitchOn,
+            reminderSlot: value,
             completed: false,
             currentStreak: 0,
             longestStreak: 0,
@@ -46,16 +57,28 @@ const AddHabit = ({ onAddSuccess }: { onAddSuccess: () => void }) => {
     }
 
   return (
-    <View style={{ flex: 1, paddingHorizontal: 20, justifyContent: 'center', marginBottom: 30 }}>
+    <View style={{ flex: 1, paddingHorizontal: 20, marginTop: 15 }}>
         <Text variant='headlineMedium' style={{ textAlign: 'center', paddingBottom: 5 }}>Add Habit</Text>
-        <View style={{ opacity: showAdd ? 1 : 0.7 }}>
+        <View style={{ opacity: showAdd ? 1 : 0.5 }}>
             <TextInput style={{ marginVertical: 7, marginHorizontal: 40 }} disabled={!showAdd} mode='outlined' label='Title' placeholder='Habit to break' value={title} onChangeText={setTitle} />
             <TextInput style={{ marginHorizontal: 40 }} disabled={!showAdd} mode='outlined' keyboardType='number-pad' label='Goal' placeholder='Streak Goal' value={goal} onChangeText={setGoal} />
-            <Text variant='titleMedium' style={{ marginVertical: 5, textAlign: 'center' }}>Reminders?</Text>
+            <Text variant='titleMedium' style={{ marginVertical: 5, textAlign: 'center', opacity: showAdd ? 1 : 0.5 }}>Reminders?</Text>
             <Switch style={{ alignSelf: 'center' }} disabled={!showAdd} value={isSwitchOn} onValueChange={() => setIsSwitchOn(!isSwitchOn)} />
+            {isSwitchOn && (
+                <SegmentedButtons
+                    value={value}
+                    onValueChange={setValue}
+                    style={{paddingHorizontal: 45, paddingVertical: 10}}
+                    buttons={[
+                        {value: 'morning', label: 'Morning'},
+                        {value: 'afternoon', label: 'Afternoon'},
+                        {value: 'evening', label: 'Evening'}
+                    ]}
+                />
+            )}
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 10 }}>
                 <Button mode='contained-tonal' style={{ flex: 0.2, marginRight: 5 }} disabled={!showAdd} onPress={() => newHabit()}>Submit</Button>
-                <Button mode='contained-tonal' style={{ flex: 0.2, marginLeft: 5 }} disabled={!showAdd} onPress={() => setShowAdd(false)}>Cancel</Button>
+                <Button mode='contained-tonal' style={{ flex: 0.2, marginLeft: 5 }} disabled={!showAdd} onPress={reset}>Cancel</Button>
             </View>
             
         </View>

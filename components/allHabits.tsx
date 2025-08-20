@@ -11,10 +11,10 @@ const AllHabits = ({ habitData }: { habitData: ExtendedHabitInfo[] }) => {
 
   return (
     <View>
-        <Text variant='headlineMedium' style={{ textAlign: 'center', marginBottom: 10 }}>All Habits</Text>
+        <Text variant='headlineMedium' style={{ textAlign: 'center', marginBottom: 10, marginTop: 15 }}>All Habits</Text>
 
         <View style={styles.container}>
-            <Text variant='titleMedium' style={{ flex: 2 }}> Habit </Text>
+            <Text variant='titleMedium' style={{ flex: 1 }}> Habit </Text>
             <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}> Goal </Text>
             <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}> Current </Text>
             <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}> Longest </Text>
@@ -36,7 +36,7 @@ const AllHabits = ({ habitData }: { habitData: ExtendedHabitInfo[] }) => {
                         <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}>{item.currentStreak}</Text>
                         <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}>{item.longestStreak}</Text>
                         <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}>{item.journalCount}</Text>
-                        <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}>{item.reminders ? "On" : "Off"}</Text>
+                        <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}>{item.reminders ? item.reminderSlot : "Off"}</Text>
                     </View>
 
                 </View>

@@ -10,9 +10,10 @@ import EditHabit from './editHabit'
 interface StreakProps {
     habitId: string;
     safeWidth: number;
+    safeHeight: number;
 }
 
-const Streaks: React.FC<StreakProps> = ({ habitId, safeWidth }) => {
+const Streaks: React.FC<StreakProps> = ({ habitId, safeWidth, safeHeight }) => {
     const { user } = useAuth();
     const [editing, setEditing] = useState(false);
     const [streakCompletion, setStreakCompletion] = useState(0);
@@ -52,14 +53,14 @@ const Streaks: React.FC<StreakProps> = ({ habitId, safeWidth }) => {
     };
 
   return (
-    <View style={[styles.container2, { width: safeWidth }]}>
+    <View style={[styles.container2, { width: safeWidth, height: safeHeight }]}>
         <View style={styles.halvesContainer2}>
             <View style={[styles.half2, { borderRightWidth: 2 }]}>
-              <Text variant='headlineMedium'> Streak </Text>
-              <Button mode='outlined' onPress={updateStreak} style={{ marginTop: 5 }}>Increase Streak</Button>
-              <Progress.Circle size={180} indeterminate={false} progress={streakCompletion} showsText={true} style={{marginTop: 10}} />
+              <Text variant='headlineLarge'> Streak </Text>
+              <Button mode='outlined' onPress={updateStreak} style={{ marginTop: 15 }}>Increase Streak</Button>
+              <Progress.Circle size={200} indeterminate={false} progress={streakCompletion} showsText={true} style={{marginTop: 20}} />
             </View>
-            <View style={styles.half2 }>
+            <View style={[styles.half2, { marginTop: 25 }]}>
                 {editing ? (
                     <EditHabit safeWidth={safeWidth} habitItem={data} onSaveSuccess={() => {
                         setEditing(false);
@@ -80,12 +81,13 @@ export default Streaks
 const styles = StyleSheet.create({
     container2: {
         flexDirection: 'column',
-        marginTop: 10,
+        justifyContent: 'center',
         alignItems: 'center',
     },
     halvesContainer2: {
         flexDirection: 'row',
         width: '100%',
+        height: '100%'
     },
     half2: {
         flex: 1,
@@ -93,9 +95,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         minHeight: 200,
         overflow: 'hidden',
-        paddingTop: 20,
     },
 })
-
-//TODO: Add change goal button
-//TODO: Style

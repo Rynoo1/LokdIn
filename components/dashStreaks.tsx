@@ -15,14 +15,14 @@ const DashStreaks = ({ habitStreakData, safeWidth, safeHeight }: { habitStreakDa
     const streakRenderItem = useCallback(({ item }: { item: HabitStreakInfo}) => {
         return (
             <View style={{height: safeHeight}}>
-                <Text variant='headlineMedium' style={{ textAlign: 'center', marginTop: 10 }}>{item.title} Streak</Text>
+                <Text variant='headlineMedium' style={{ textAlign: 'center', marginTop: 15 }}>{item.title} Streak</Text>
                 <View style={styles.halvesContainer}>
                     <View style={[styles.container, { width: safeWidth }]}>
                         <TouchableOpacity style={[styles.half, { width: safeWidth }]} onPress={() => navigation.navigate("Habit", { habitId: `${item.id}` })}>
                             <Text variant='titleLarge'>Streak Progress</Text>
                             <Progress.Circle size={200} color='#0554F2' animated={true} indeterminate={false} progress={item.completion} showsText formatText={() => `${Math.round(item.completion * 100)}%`}  style={{ marginTop: 20 }} />
                             {/* <Text variant='titleSmall' style={{ color: "#052608ff" }}>Current</Text> */}
-                        </TouchableOpacity>                        
+                        </TouchableOpacity>
                         <TouchableOpacity style={[styles.half, { width: safeWidth }]} onPress={() => navigation.navigate("Habit", { habitId: `${item.id}` })}>
                             <Text variant='titleLarge' style={{ color: "#052608ff" }}>Streak Goal:</Text>
                             <Text variant='titleLarge' style={{ color: "#052608" }}> {item.goal} </Text>

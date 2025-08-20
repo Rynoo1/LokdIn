@@ -11,8 +11,21 @@ import { useEffect, useRef, useState } from 'react';
 import QuickUse from './screens/QuickUse';
 import Habit from './screens/Habit';
 import { Audio } from 'expo-av';
+import * as Notifications from "expo-notifications";
+import { getUserHabits } from './services/DbService';
+import { scheduleHabitSlotReminders } from './services/notificationService';
 
 const stack = createNativeStackNavigator();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 
 function RootNavigator() {
   const { user } = useAuth()!;
@@ -23,6 +36,26 @@ function RootNavigator() {
 
   useEffect(() => {
     if (!user) return;
+
+    const requestPermissions = async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== "granted") {
+        alert("Enable notifications to receive habit reminders!");
+      }
+    };
+
+    requestPermissions();
+
+    const initNotifications = async () => {
+      try {
+        const habitItems = await getUserHabits(user.uid);
+
+        await scheduleHabitSlotReminders(habitItems);
+        console.log("Notifications on startup");
+      } catch (error) {
+        console.log("Notification error on startup ", error);
+      }
+    };
 
     const handleOrientationChange = (orientation: ScreenOrientation.Orientation) => {
       console.log('Orientation changed:', orientation);
@@ -60,6 +93,7 @@ function RootNavigator() {
     };
 
     init();
+    initNotifications();
 
     return () => {
       if (subscriptionRef.current) {
@@ -75,8 +109,8 @@ function RootNavigator() {
       { user ? (
           showDash ? (
             <stack.Navigator>
-              <stack.Screen name='Dashboard' component={Dashboard} />
-              <stack.Screen name='Habit' component={Habit} />
+              <stack.Screen options={{ headerShown: false }} name='Dashboard' component={Dashboard} />
+              <stack.Screen options={{ headerShown: false }} name='Habit' component={Habit} />
             </stack.Navigator>
           ) : (
             <stack.Navigator>

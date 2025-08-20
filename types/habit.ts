@@ -1,4 +1,5 @@
 import { Timestamp } from "firebase/firestore";
+import { TimeSlot } from "../utils/timeSlots";
 
 export type HabitStreakInfo = {
     id: string;
@@ -14,4 +15,5 @@ export type ExtendedHabitInfo = HabitStreakInfo & {
     completed: boolean;
     longestStreak: number;
     reminders: boolean;
+    reminderSlot: TimeSlot;
 }

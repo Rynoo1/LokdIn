@@ -17,9 +17,10 @@ type HabitRouteProp = RouteProp<{ Habit: HabitRouteParams }, 'Habit'>;
 const Habit = () => {
 
     const route = useRoute<HabitRouteProp>();
-    const habitId = "miDd6V2kEBvximwn07Iv";
+    const habitId = route.params.habitId;
 
     const [safeWidth, setSafeWidth] = useState(0);
+    const [safeHeight, setSafeHeight] = useState(0);
     const insets = useSafeAreaInsets();
 
     const subScreens = [
@@ -29,8 +30,9 @@ const Habit = () => {
 
     useFocusEffect(
         useCallback(() => {
-            const { width: screenWidth } = Dimensions.get('window');
+            const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
             setSafeWidth(screenWidth - insets.left - insets.right);
+            setSafeHeight(screenHeight - insets.top - insets.bottom);
         },[insets.left, insets.right])
     );
 
@@ -38,7 +40,7 @@ const Habit = () => {
         return (
             <View style={{ width: safeWidth }}>
                 {item.id === 'journal' && <Journal habitId={habitId} safeWidth={safeWidth} />}
-                {item.id === 'streaks' && <Streaks habitId={habitId} safeWidth={safeWidth} />}
+                {item.id === 'streaks' && <Streaks habitId={habitId} safeWidth={safeWidth} safeHeight={safeHeight} />}
             </View>
         );
     };
@@ -54,6 +56,7 @@ const Habit = () => {
             snapToInterval={safeWidth}
             bounces={false}
             renderItem={renderScreens}
+            style={{ height: safeHeight, paddingVertical: 10 }}
         />
     </SafeAreaView>
   )

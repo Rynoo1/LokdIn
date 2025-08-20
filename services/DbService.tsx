@@ -1,12 +1,14 @@
 import { addDoc, collection, doc, getDoc, getDocs, increment, query, Timestamp, updateDoc, where } from "firebase/firestore"
 import { db } from "../firebase"
 import { ExtendedHabitInfo, HabitStreakInfo } from "../types/habit"
+import { scheduleHabitSlotReminders } from "./notificationService";
 
 export interface HabitItem {
     id?: string,
     title?: string,
     goal?: number,
     reminders?: boolean,
+    reminderSlot?: "morning" | "afternoon" | "evening",
     currentDate?: Timestamp,
     endDate?: Timestamp,
     currentStreak?: number,
@@ -19,6 +21,7 @@ export interface AddHabitItem {
     title: string,
     goal: number,
     remindersOn: boolean,
+    reminderSlot?: "morning" | "afternoon" | "evening",
     startDate: Timestamp,
     currentStreak: number,
     longestStreak: number,
@@ -39,11 +42,13 @@ export interface UserStreakData {
     dataLastStreak: Timestamp;
 }
 
-//function to create new habit
+// function to create new habit
 export const createHabit = async (userId: string, habit: AddHabitItem) => {
     try {
         const docRef = await addDoc(collection(db, "users", userId, "habits"), habit);
         console.log("Habit added ", docRef.id);
+        const allHabits = await getUserHabits(userId);
+        await scheduleHabitSlotReminders(allHabits);
         return true;
     } catch (error) {
         console.log("Error ", error)
@@ -51,9 +56,7 @@ export const createHabit = async (userId: string, habit: AddHabitItem) => {
     }
 }
 
-//TODO: function to edit habit
-
-//function to add custom reminders
+// function to add custom reminders
 export const addReminders = async (userId: string, habitId: string, reminder: ReminderItem) => {
 
     const habitDoc = doc(db, "users", userId, "habits", habitId);
@@ -80,7 +83,7 @@ export const addReminders = async (userId: string, habitId: string, reminder: Re
     }
 }
 
-//get all journal entries for a specific habit
+// get all journal entries for a specific habit
 export const getHabitJournals = async (userId: string, habitId: string) => {
     try {
         const journalsRef = collection(db, "users", userId, "habits", habitId, "journals");
@@ -96,7 +99,7 @@ export const getHabitJournals = async (userId: string, habitId: string) => {
     }
 }
 
-//get habit title, streak goal and currentstreak for all habits for one user
+// get habit title, streak goal and currentstreak for all habits for one user
 export const getAllHabitStreak = async (userId: string): Promise<ExtendedHabitInfo[]> => {
     try {
         const ref = collection(db, "users", userId, "habits"); 
@@ -117,6 +120,7 @@ export const getAllHabitStreak = async (userId: string): Promise<ExtendedHabitIn
                 completed: data.completed,
                 longestStreak: data.longestStreak,
                 reminders: data.remindersOn,
+                reminderSlot: data.reminderSlot,
             };
         });
 
@@ -128,7 +132,21 @@ export const getAllHabitStreak = async (userId: string): Promise<ExtendedHabitIn
     }
 }
 
-//TODO: function to edit the goal streak
+// get user Habits
+export const getUserHabits = async (userId: string): Promise<AddHabitItem[]> => {
+    const userRef = collection(db, "users", userId, "habits");
+    const habitsSnap = await getDocs(userRef);
+
+    const notifs =  habitsSnap.docs.map(doc => {
+        const data = doc.data();
+        return {
+            ...data,
+        } as AddHabitItem;
+    })
+    .filter(habit => habit.remindersOn === true);
+
+    return notifs;
+}
 
 // get streak data and convert to %
 export const getStreak = async (userId: string, habitId: string): Promise<HabitItem> => {
@@ -148,6 +166,7 @@ export const getStreak = async (userId: string, habitId: string): Promise<HabitI
         title: streakData.title,
         goal: streakData.goal,
         reminders: streakData.remindersOn,
+        reminderSlot: streakData.reminderSlot,
         completion: completion
     };
 
@@ -167,8 +186,11 @@ export const editHabitData = async (userId: string, habitItem: HabitItem) => {
         await updateDoc(habitRef, {
             title: habitItem.title,
             goal: habitItem.goal,
-            remindersOn: habitItem.reminders
+            remindersOn: habitItem.reminders,
+            reminderSlot: habitItem.reminderSlot
         });
+        const allHabits = await getUserHabits(userId);
+        await scheduleHabitSlotReminders(allHabits);
         return true
     } catch (error) {
         console.log('Error ', error);
@@ -186,28 +208,26 @@ export const checkAndIncrementStreak = async (userId: string, habitId: string) =
     }
 
     const streakData = streakSnap.data();
-    const { currentStreak = 0, dateLastStreak, longestStreak } = streakData;
+    const { currentStreak = 0, dateLastStreak, longestStreak, completed, goal } = streakData;
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    console.log(longestStreak);
-
-    if (!dateLastStreak) {
-        await updateDoc(streakRef, {
-            currentStreak: 1,
-            dateLastStreak: Timestamp.fromDate(new Date())
-        });
-        return {
-            streakIncremented: true,
-            currentStreak: 1,
-            message: "Habit streak started!"
-        };
-    }
 
     const lastStreakDate = dateLastStreak.toDate();
     lastStreakDate.setHours(0, 0, 0, 0);
 
     const daysDifference = Math.floor((today.getTime() - lastStreakDate.getTime()) / (1000 * 60 * 60 * 24));
+
+    const newStreak = currentStreak + 1;
+
+    if (completed) {
+        return {
+            streakIncremented: false,
+            currentStreak: 0,
+            message: "Habit already completed"
+        };
+    }
+
 
     if (daysDifference === 0) {
         return {
@@ -215,8 +235,30 @@ export const checkAndIncrementStreak = async (userId: string, habitId: string) =
             currentStreak,
             message: "Streak already incremented today"
         };
-    } else if (daysDifference === 1 && currentStreak > longestStreak ) {
-        const newStreak = currentStreak + 1;
+    } else if (newStreak >= goal && currentStreak >= longestStreak) {
+        await updateDoc(streakRef, {
+            currentStreak: newStreak,
+            dateLastStreak: Timestamp.fromDate(new Date()),
+            longestStreak: newStreak,
+            completed: true,
+        });
+        return {
+            streakIncremented: true,
+            currentStreak: newStreak,
+            message: 'Habit Completed! Congratulations!'
+        }
+    } else if (newStreak >= goal) {
+        await updateDoc(streakRef, {
+            currentStreak: newStreak,
+            dateLastStreak: Timestamp.fromDate(new Date()),
+            completed: true,
+        });
+        return {
+            streakIncremented: true,
+            currentStreak: newStreak,
+            message: 'Habit Completed! Congratulations!'
+        }
+    } else if (daysDifference === 1 && currentStreak >= longestStreak ) {
         await updateDoc(streakRef, {
             currentStreak: newStreak,
             dateLastStreak: Timestamp.fromDate(new Date()),
@@ -228,7 +270,6 @@ export const checkAndIncrementStreak = async (userId: string, habitId: string) =
             message: `Streak is now ${newStreak} days!`
         };
     } else if (daysDifference === 1) {
-        const newStreak = currentStreak + 1;
         await updateDoc(streakRef, {
             currentStreak: newStreak,
             dateLastStreak: Timestamp.fromDate(new Date())

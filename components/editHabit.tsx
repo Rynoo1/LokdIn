@@ -1,9 +1,10 @@
 import { StyleSheet, View } from 'react-native'
 import React, { useState } from 'react'
-import { Button, Switch, Text, TextInput } from 'react-native-paper'
+import { Button, SegmentedButtons, Switch, Text, TextInput } from 'react-native-paper'
 import { editHabitData, HabitItem } from '../services/DbService'
 import { useAuth } from '../contexts/authContext'
 import { useNavigation } from '@react-navigation/native'
+import { TimeSlot } from '../utils/timeSlots'
 
 interface EditProps {
     safeWidth: number,
@@ -16,6 +17,8 @@ const EditHabit: React.FC<EditProps> = ({ safeWidth, habitItem, onSaveSuccess })
     const [isSwitchOn, setIsSwitchOn] = useState<boolean>(habitItem.reminders!);
     const [title, setTitle] = useState(habitItem.title || "");
     const [goal, setGoal] = useState(habitItem.goal?.toString() || "0");
+    const [slot, setSlot] = useState(habitItem.reminderSlot || "");
+
     const width = safeWidth/2;
     const onToggleSwtich = () => setIsSwitchOn(!isSwitchOn);
 
@@ -27,15 +30,20 @@ const EditHabit: React.FC<EditProps> = ({ safeWidth, habitItem, onSaveSuccess })
             title: title,
             goal: Number(goal),
             reminders: isSwitchOn,
+            reminderSlot: slot as TimeSlot,
         };
 
-        const success = await editHabitData(user.uid, updatedHabit);
+        // const success = await editHabitData(user.uid, updatedHabit);
+        const success = false;
 
         if (success) {
             console.log("Habit updated successfully!");
+            alert("Successfully updated Habit!");
             onSaveSuccess();
         } else {
             console.log("Failed to update habit");
+            console.log(slot, habitItem.reminderSlot);
+            alert("Something went wrong");
         }
     }
 
@@ -47,6 +55,19 @@ const EditHabit: React.FC<EditProps> = ({ safeWidth, habitItem, onSaveSuccess })
             <TextInput mode='outlined' keyboardType='numeric' label='Goal' value={goal} onChangeText={setGoal} />
             <Text variant='titleMedium' style={{ marginVertical: 5, textAlign: 'center' }}>Reminders</Text>
             <Switch style={{ alignSelf: 'center' }} value={isSwitchOn} onValueChange={onToggleSwtich} />
+            {isSwitchOn && (
+                <SegmentedButtons
+                    value={slot}
+                    onValueChange={setSlot}
+                    density='medium'
+                    style={{paddingVertical: 10}}
+                    buttons={[
+                        {value: 'morning', label: 'Morning'},
+                        {value: 'afternoon', label: 'Afternoon'},
+                        {value: 'evening', label: 'Evening'}
+                    ]}
+                />
+            )}
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 10 }}>
                 <Button mode='contained-tonal' style={{ flex: 1, marginRight: 5 }} onPress={updateHabit}>Submit</Button>
                 <Button mode='contained-tonal' style={{ flex: 1, marginLeft: 5 }} onPress={() => onSaveSuccess()}>Cancel</Button>
