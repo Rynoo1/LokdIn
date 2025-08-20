@@ -15,6 +15,18 @@ export interface HabitItem {
     completion?: number,
 }
 
+export interface AddHabitItem {
+    title: string,
+    goal: number,
+    remindersOn: boolean,
+    startDate: Timestamp,
+    currentStreak: number,
+    longestStreak: number,
+    completed: boolean,
+    dateLastStreak: Timestamp,
+    journalCount: number
+}
+
 export interface ReminderItem {
     title: string,
     time: Timestamp,
@@ -28,12 +40,14 @@ export interface UserStreakData {
 }
 
 //function to create new habit
-export const createHabit = async (userId: string, habit: HabitItem) => {
+export const createHabit = async (userId: string, habit: AddHabitItem) => {
     try {
         const docRef = await addDoc(collection(db, "users", userId, "habits"), habit);
         console.log("Habit added ", docRef.id);
+        return true;
     } catch (error) {
         console.log("Error ", error)
+        return false;
     }
 }
 
@@ -153,7 +167,7 @@ export const editHabitData = async (userId: string, habitItem: HabitItem) => {
         await updateDoc(habitRef, {
             title: habitItem.title,
             goal: habitItem.goal,
-            reminders: habitItem.reminders
+            remindersOn: habitItem.reminders
         });
         return true
     } catch (error) {

@@ -9,6 +9,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import * as ScreenOrientation from 'expo-screen-orientation';
 import AllHabits from '../components/allHabits';
 import { Text } from 'react-native-paper';
+import AddHabit from '../components/addHabit';
 
 const Dashboard = () => {
 
@@ -59,11 +60,15 @@ const Dashboard = () => {
         decelerationRate='fast'
       >
         <View style={{ width: safeWidth, height: safeHeight }}>
-          <DashStreaks habitStreakData={habitStreaks} safeWidth={safeWidth} />
+          <DashStreaks habitStreakData={habitStreaks} safeWidth={safeWidth} safeHeight={safeHeight} />
         </View>
 
         <View style={{ width: safeWidth, height: safeHeight }}>
           <AllHabits habitData={habitStreaks} />
+        </View>
+
+        <View style={{ width: safeWidth, height: safeHeight }}>
+          <AddHabit onAddSuccess={() => {handleGetData(user.uid)}} />
         </View>
 
       </ScrollView>

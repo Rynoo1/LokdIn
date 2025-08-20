@@ -38,6 +38,7 @@ const EditHabit: React.FC<EditProps> = ({ safeWidth, habitItem, onSaveSuccess })
             console.log("Failed to update habit");
         }
     }
+
   return (
     <View style={{ flex: 1, width: width, paddingHorizontal: 20 }}>
         <View>
@@ -46,7 +47,10 @@ const EditHabit: React.FC<EditProps> = ({ safeWidth, habitItem, onSaveSuccess })
             <TextInput mode='outlined' keyboardType='numeric' label='Goal' value={goal} onChangeText={setGoal} />
             <Text variant='titleMedium' style={{ marginVertical: 5, textAlign: 'center' }}>Reminders</Text>
             <Switch style={{ alignSelf: 'center' }} value={isSwitchOn} onValueChange={onToggleSwtich} />
-            <Button mode='contained-tonal' style={{ marginHorizontal: 100, marginTop: 10 }} onPress={updateHabit}>Submit</Button>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 10 }}>
+                <Button mode='contained-tonal' style={{ flex: 1, marginRight: 5 }} onPress={updateHabit}>Submit</Button>
+                <Button mode='contained-tonal' style={{ flex: 1, marginLeft: 5 }} onPress={() => onSaveSuccess()}>Cancel</Button>
+            </View>
         </View>
     </View>
   )

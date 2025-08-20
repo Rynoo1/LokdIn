@@ -9,13 +9,13 @@ import { MainStackParamList } from '../types/navigation';
 
 //TODO: display habit name, streak progress and streak goal
 
-const DashStreaks = ({ habitStreakData, safeWidth }: { habitStreakData: HabitStreakInfo[]; safeWidth: number; }) => {
+const DashStreaks = ({ habitStreakData, safeWidth, safeHeight }: { habitStreakData: HabitStreakInfo[]; safeWidth: number; safeHeight: number; }) => {
     const navigation = useNavigation<NavigationProp<MainStackParamList>>();
 
     const streakRenderItem = useCallback(({ item }: { item: HabitStreakInfo}) => {
         return (
-            <View>
-                <Text variant='headlineMedium' style={{ textAlign: 'center', marginBottom: 10 }}>{item.title} Streak</Text>
+            <View style={{height: safeHeight}}>
+                <Text variant='headlineMedium' style={{ textAlign: 'center', marginTop: 10 }}>{item.title} Streak</Text>
                 <View style={styles.halvesContainer}>
                     <View style={[styles.container, { width: safeWidth }]}>
                         <TouchableOpacity style={[styles.half, { width: safeWidth }]} onPress={() => navigation.navigate("Habit", { habitId: `${item.id}` })}>
@@ -42,6 +42,8 @@ const DashStreaks = ({ habitStreakData, safeWidth }: { habitStreakData: HabitStr
             keyExtractor={(item) => item.id}
             renderItem={streakRenderItem}
             extraData={habitStreakData}
+            snapToInterval={safeHeight}
+            showsVerticalScrollIndicator={false}
         />
     </View>
 
