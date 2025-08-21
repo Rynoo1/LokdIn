@@ -17,12 +17,12 @@ const AllHabits = ({ habitData }: { habitData: ExtendedHabitInfo[] }) => {
         <Text variant='headlineMedium' style={styles.heading}>All Habits</Text>
 
         <View style={styles.container}>
-            <Text variant='titleLarge' style={{ flex: 1, color: styles.titles.color }}> Habit </Text>
+            <Text variant='titleLarge' style={styles.titles}> Habit </Text>
             <Text variant='titleLarge' style={styles.titles}> Goal </Text>
             <Text variant='titleLarge' style={styles.titles}> Current </Text>
             <Text variant='titleLarge' style={styles.titles}> Longest </Text>
             <Text variant='titleLarge' style={styles.titles}> Journals </Text>
-            <Text variant='titleLarge' style={styles.titles}> Reminders </Text>
+            <Text variant='titleLarge' style={[styles.titles, {borderRightColor: '#011F26'}]}> Reminders </Text>
         </View>
         <ScrollView>
             {habitData.map((item) => (
@@ -58,8 +58,9 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: "row",
         paddingVertical: 8,
-        borderBottomWidth: 1,
-        borderColor: "#ccc",
+        borderBottomWidth: 4,
+        borderColor: '#F2668B',
+        backgroundColor: '#011F26'
     },
     content: {
         flexDirection: "row",
@@ -68,14 +69,16 @@ const styles = StyleSheet.create({
     titles: {
         flex: 1,
         textAlign: 'center',
-        color: "#03A688",
+        color: "#e7effaff",
+        borderRightColor: '#F2668B',
+        borderRightWidth: 2
     },
     label: {
         color: "#026873",
         flex: 1,
     },
     items: {
-        color: "#F2668B",
+        color: "#03A688",
         flex: 1,
         textAlign: 'center',
         fontWeight: 'bold',

@@ -34,7 +34,6 @@ const EditHabit: React.FC<EditProps> = ({ safeWidth, habitItem, onSaveSuccess })
         };
 
         const success = await editHabitData(user.uid, updatedHabit);
-        //const success = false;
 
         if (success) {
             console.log("Habit updated successfully!");
@@ -50,11 +49,11 @@ const EditHabit: React.FC<EditProps> = ({ safeWidth, habitItem, onSaveSuccess })
   return (
     <View style={{ flex: 1, width: width, paddingHorizontal: 20 }}>
         <View>
-            <Text variant='headlineMedium' style={{ textAlign: 'center' }}>Edit Habit</Text>
-            <TextInput style={{ marginVertical: 5 }} mode='outlined' label='Title' value={title} onChangeText={setTitle} />
-            <TextInput mode='outlined' keyboardType='numeric' label='Goal' value={goal} onChangeText={setGoal} />
+            <Text variant='headlineLarge' style={{ textAlign: 'center', color: '#011F26' }}>Edit Habit</Text>
+            <TextInput style={{ marginVertical: 5 }} mode='outlined' activeOutlineColor='#03A688' label='Title' value={title} onChangeText={setTitle} />
+            <TextInput mode='outlined' activeOutlineColor='#03A688' keyboardType='numeric' label='Goal' value={goal} onChangeText={setGoal} />
             <Text variant='titleMedium' style={{ marginVertical: 5, textAlign: 'center' }}>Reminders</Text>
-            <Switch style={{ alignSelf: 'center' }} value={isSwitchOn} onValueChange={onToggleSwtich} />
+            <Switch style={{ alignSelf: 'center' }} color='#03A688' value={isSwitchOn} onValueChange={onToggleSwtich} />
             {isSwitchOn && (
                 <SegmentedButtons
                     value={slot}
@@ -62,15 +61,15 @@ const EditHabit: React.FC<EditProps> = ({ safeWidth, habitItem, onSaveSuccess })
                     density='medium'
                     style={{paddingVertical: 10}}
                     buttons={[
-                        {value: 'morning', label: 'Morning'},
-                        {value: 'afternoon', label: 'Afternoon'},
-                        {value: 'evening', label: 'Evening'}
+                        {value: 'morning', label: 'Morning', style: slot === 'morning' ? {backgroundColor: '#03A688'} : undefined},
+                        {value: 'afternoon', label: 'Afternoon', style: slot === 'afternoon' ? {backgroundColor: '#03A688'} : undefined},
+                        {value: 'evening', label: 'Evening', style: slot === 'evening' ? {backgroundColor: '#03A688'} : undefined}
                     ]}
                 />
             )}
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 10 }}>
-                <Button mode='contained-tonal' style={{ flex: 1, marginRight: 5 }} onPress={updateHabit}>Submit</Button>
-                <Button mode='contained-tonal' style={{ flex: 1, marginLeft: 5 }} onPress={() => onSaveSuccess()}>Cancel</Button>
+                <Button mode='contained' buttonColor='#F2668B' style={{ flex: 1, marginRight: 5 }} onPress={updateHabit}>Submit</Button>
+                <Button mode='contained' buttonColor='#3B94CA' style={{ flex: 1, marginLeft: 5 }} onPress={() => onSaveSuccess()}>Cancel</Button>
             </View>
         </View>
     </View>

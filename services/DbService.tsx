@@ -15,6 +15,7 @@ export interface HabitItem {
     longestStreak?: number,
     completed?: boolean,
     completion?: number,
+    dateStarted?: Timestamp,
 }
 
 export interface AddHabitItem {
@@ -177,7 +178,10 @@ export const getStreak = async (userId: string, habitId: string): Promise<HabitI
         goal: streakData.goal,
         reminders: streakData.remindersOn,
         reminderSlot: streakData.reminderSlot,
-        completion: completion
+        completion: completion,
+        dateStarted: streakData.startDate,
+        currentStreak: streakData.currentStreak,
+        longestStreak: streakData.longestStreak,
     };
 
     return habitItem;

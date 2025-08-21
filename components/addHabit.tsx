@@ -78,8 +78,8 @@ const AddHabit = ({ onAddSuccess }: { onAddSuccess: () => void }) => {
                 />
             )}
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 10 }}>
-                <Button mode='contained' buttonColor='#F2668B' textColor='#011F26' style={{ flex: 0.2, marginRight: 5 }} disabled={!showAdd} onPress={() => newHabit()}>Submit</Button>
-                <Button mode='contained' buttonColor='#3B94CA' textColor='#011F26' style={{ flex: 0.2, marginLeft: 5 }} disabled={!showAdd} onPress={reset}>Cancel</Button>
+                <Button mode='contained' buttonColor='#F2668B' style={{ flex: 0.2, marginRight: 5 }} disabled={!showAdd} onPress={() => newHabit()}>Submit</Button>
+                <Button mode='contained' buttonColor='#3B94CA' style={{ flex: 0.2, marginLeft: 5 }} disabled={!showAdd} onPress={reset}>Cancel</Button>
             </View>
             
         </View>
