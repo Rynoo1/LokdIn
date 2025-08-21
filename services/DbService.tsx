@@ -57,31 +57,31 @@ export const createHabit = async (userId: string, habit: AddHabitItem) => {
 }
 
 // function to add custom reminders
-export const addReminders = async (userId: string, habitId: string, reminder: ReminderItem) => {
+// export const addReminders = async (userId: string, habitId: string, reminder: ReminderItem) => {
 
-    const habitDoc = doc(db, "users", userId, "habits", habitId);
-    await updateDoc(habitDoc, {reminders: true});
+//     const habitDoc = doc(db, "users", userId, "habits", habitId);
+//     await updateDoc(habitDoc, {reminders: true});
     
-    try {
-        const reminderRef = collection(habitDoc, "reminders");
-        const q = query(
-            reminderRef,
-            where("time", "==", reminder.time),
-            where("repeatPattern", "==", reminder.repeatPattern)
-        );
+//     try {
+//         const reminderRef = collection(habitDoc, "reminders");
+//         const q = query(
+//             reminderRef,
+//             where("time", "==", reminder.time),
+//             where("repeatPattern", "==", reminder.repeatPattern)
+//         );
 
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-            console.log("Reminder already exists");
-            return;
-        } else {
-            const reminderDoc = await addDoc(reminderRef, reminder);
-            console.log("Updated reminders ", reminderDoc.id);
-        }
-    } catch (error) {
-        console.log("Error ", error);
-    }
-}
+//         const querySnapshot = await getDocs(q);
+//         if (!querySnapshot.empty) {
+//             console.log("Reminder already exists");
+//             return;
+//         } else {
+//             const reminderDoc = await addDoc(reminderRef, reminder);
+//             console.log("Updated reminders ", reminderDoc.id);
+//         }
+//     } catch (error) {
+//         console.log("Error ", error);
+//     }
+// }
 
 // get all journal entries for a specific habit
 export const getHabitJournals = async (userId: string, habitId: string) => {
@@ -96,6 +96,16 @@ export const getHabitJournals = async (userId: string, habitId: string) => {
     } catch (error) {
         console.error("Error fetching journals: ", error);
         throw error;
+    }
+}
+
+// get habit title
+export const getHabitTitle = async (userId: string, habitId: string) => {
+    try {
+        const habbit = await getDoc(doc(db, "users", userId, "habits", habitId));
+        return habbit.data(); 
+    } catch (error) {
+        console.error("Error fetching Habit Name: ", error);
     }
 }
 

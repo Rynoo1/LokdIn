@@ -4,7 +4,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { startRecording, stopRecording, toggleAudio } from '../services/audioService';
 import { useAuth } from '../contexts/authContext';
 import { uploadAudio } from '../services/bucketService';
-import { getHabitJournals } from '../services/DbService';
+import { getHabitJournals, getHabitTitle } from '../services/DbService';
 import { Dimensions } from 'react-native';
 import { Button } from 'react-native-paper';
 import { Text } from 'react-native-paper';
@@ -20,14 +20,29 @@ const Journal: React.FC<JournalProps> = ({ habitId, safeWidth }) => {
   const [status, setStatus] = useState("");
   const [journalEntries, setJournalEntries] = useState<any[]>([]);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null)
+  const [habitName, setHabitName] = useState("");
 
   const fetchData = async () => {
-    const data = await getHabitJournals(user?.uid, habitId);
-    setJournalEntries(data);
-  };
+    const data: any[] = await getHabitJournals(user?.uid, habitId);
+    
+    const sorted = data.sort((a, b) => {
+        const dateA = a.name.replace("Journal-", "").replace(".m4a", "").replace(/\//g, "-");
+        const dateB = b.name.replace("Journal-", "").replace(".m4a", "").replace(/\//g, "-");
+        return new Date(dateA).getTime() - new Date (dateB).getTime();
+    });
+
+    setJournalEntries(sorted);
+  };  
 
   useEffect(() => {
+    const fetchName = async () => {
+        const habName = await getHabitTitle(user.uid, habitId);
+        if (habName) {
+            setHabitName(await(habName.title));
+        }
+    }
     fetchData();
+    fetchName();
   }, [habitId]);
 
   const handleStart = async () => {
@@ -53,12 +68,14 @@ const Journal: React.FC<JournalProps> = ({ habitId, safeWidth }) => {
         const downloadUrl = await uploadAudio(userId, habitId, uri, recName);
         
         setStatus("Upload complete!");
+        alert("Upload complete!");
         fetchData();
 
         console.log("File uploaded to: ", downloadUrl);
     } catch (error) {
         console.log("Error ", error);
         setStatus("Error during stop/upload: " + (error as Error).message);
+        alert("Error during stop/upload: " + (error as Error).message);
     }
   };
 
@@ -73,7 +90,7 @@ const Journal: React.FC<JournalProps> = ({ habitId, safeWidth }) => {
   return (
     <View style={[styles.container, { width: safeWidth }]}>
 
-        <Text variant='headlineMedium' style={{ textAlign: 'center', marginBottom: 10 }}> Journal </Text>
+        <Text variant='headlineMedium' style={styles.heading}>{habitName} Journal </Text>
 
         <View style={styles.halvesContainer}>
             <View style={styles.half}>
@@ -93,9 +110,10 @@ const Journal: React.FC<JournalProps> = ({ habitId, safeWidth }) => {
                                 return (
                                     <Button 
                                         icon={isPlaying ? "pause" : "play"}
-                                        mode='outlined' 
+                                        mode='outlined'
+                                        textColor='#026873'
                                         onPress={() => handleToggle(item.id, item.audioUrl)}
-                                        style={{ margin: 5 }}
+                                        style={{ margin: 5, borderColor: '#03A688', borderWidth: 1.5 }}
                                     >
                                         {item.name}
                                     </Button>
@@ -108,9 +126,9 @@ const Journal: React.FC<JournalProps> = ({ habitId, safeWidth }) => {
             </View>
             <View style={[styles.half, { borderLeftWidth: 2 }]}>
                 {!isRecording ? (
-                    <Button icon='microphone' mode='contained-tonal' onPress={handleStart}> Record Audio </Button>
+                    <Button icon='microphone' mode='contained' buttonColor='#F2668B' onPress={handleStart}> Record Audio </Button>
                 ) : (
-                    <Button icon='microphone-outline' mode='contained-tonal' onPress={handleStop}> Stop Recording </Button>
+                    <Button icon='microphone-outline' mode='outlined' textColor='#026873' style={{borderColor: '#F2668B', borderWidth: 2}} onPress={handleStop}> Stop Recording </Button>
                 )}
             </View>
         </View>
@@ -139,5 +157,10 @@ const styles = StyleSheet.create({
         minHeight: 200,
         overflow: 'hidden',
         paddingTop: 20,
+    },
+    heading: {
+        textAlign: 'center', 
+        marginBottom: 10,
+        color: '#011F26'
     },
 })
