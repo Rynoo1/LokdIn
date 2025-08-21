@@ -198,7 +198,7 @@ export const editHabitData = async (userId: string, habitItem: HabitItem) => {
     }
 }
 
-// check if when last streak has been incremented and either update or reset streak
+// check when last the streak has been incremented and either update or reset streak
 export const checkAndIncrementStreak = async (userId: string, habitId: string) => {
     const streakRef = doc(db, "users", userId, "habits", habitId);
     const streakSnap = await getDoc(streakRef);

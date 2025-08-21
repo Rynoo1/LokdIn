@@ -114,7 +114,7 @@ function RootNavigator() {
             </stack.Navigator>
           ) : (
             <stack.Navigator>
-              <stack.Screen name='QuickAccess' component={QuickUse} />
+              <stack.Screen options={{ headerShown: false }} name='QuickAccess' component={QuickUse} />
             </stack.Navigator>
           )
       ) : (

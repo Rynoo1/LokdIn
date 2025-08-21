@@ -78,7 +78,7 @@ const Journal: React.FC<JournalProps> = ({ habitId, safeWidth }) => {
         <View style={styles.halvesContainer}>
             <View style={styles.half}>
                 {journalEntries.length === 0 ? (
-                    <Text> No journal entries yet </Text>
+                    <Text variant='headlineSmall' style={{ textAlign: 'center' }}> No journal entries yet </Text>
                 ) : (
                     // <View>
 
