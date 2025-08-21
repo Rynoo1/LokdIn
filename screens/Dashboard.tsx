@@ -46,11 +46,11 @@ const Dashboard = () => {
   }
 
   if (safeWidth === 0) {
-    return <SafeAreaView style={{ flex: 1, backgroundColor: "#bdf26d59" }} />;
+    return <SafeAreaView style={{ flex: 1 }} />;
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#bdf26d59" }}>
+    <SafeAreaView style={{ flex: 1  }}>
       <ScrollView
         horizontal={true}
         pagingEnabled={true}

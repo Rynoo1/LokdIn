@@ -15,19 +15,20 @@ const DashStreaks = ({ habitStreakData, safeWidth, safeHeight }: { habitStreakDa
     const streakRenderItem = useCallback(({ item }: { item: HabitStreakInfo}) => {
         return (
             <View style={{height: safeHeight}}>
-                <Text variant='headlineMedium' style={{ textAlign: 'center', marginTop: 15 }}>{item.title} Streak</Text>
+                <Text variant='headlineMedium' style={styles.heading}>{item.title} Streak</Text>
                 <View style={styles.halvesContainer}>
                     <View style={[styles.container, { width: safeWidth }]}>
                         <TouchableOpacity style={[styles.half, { width: safeWidth }]} onPress={() => navigation.navigate("Habit", { habitId: `${item.id}` })}>
-                            <Text variant='titleLarge'>Streak Progress</Text>
-                            <Progress.Circle size={200} color='#0554F2' animated={true} indeterminate={false} progress={item.completion} showsText formatText={() => `${Math.round(item.completion * 100)}%`}  style={{ marginTop: 20 }} />
-                            {/* <Text variant='titleSmall' style={{ color: "#052608ff" }}>Current</Text> */}
+                            <Text variant='titleLarge' style={{ color: styles.label.color }}>Streak Progress</Text>
+                            <Progress.Circle size={200} color='#F2668B' borderWidth={3.5} thickness={5} strokeCap='round' animated={true} indeterminate={false} progress={item.completion} showsText formatText={() => `${Math.round(item.completion * 100)}%`}  style={{ marginTop: 20 }} />
                         </TouchableOpacity>
                         <TouchableOpacity style={[styles.half, { width: safeWidth }]} onPress={() => navigation.navigate("Habit", { habitId: `${item.id}` })}>
-                            <Text variant='titleLarge' style={{ color: "#052608ff" }}>Streak Goal:</Text>
-                            <Text variant='titleLarge' style={{ color: "#052608" }}> {item.goal} </Text>
-                            <Text variant='titleLarge' style={{ marginTop: 35, color: "#052608" }}>Last Completed</Text>
-                            <Text variant='titleLarge' style={{ color: "#052608" }}> {item.lastCompleted.toDate().toLocaleDateString()} </Text>
+                            <Text variant='titleLarge' style={{ color: styles.label.color }}>Streak Goal</Text>
+                            <Text variant='titleLarge' style={[styles.content, { fontWeight: 'bold' }]}> {item.goal} <Text variant='titleLarge' style={{color: styles.label.color}}>Days</Text> </Text>
+                            <Text variant='titleLarge' style={styles.label}>Current Streak</Text>
+                            <Text variant='titleLarge' style={[styles.content, { fontWeight: 'bold' }]}> {item.currentStreak} <Text variant='titleLarge' style={{color: styles.label.color}}>Days</Text> </Text>
+                            <Text variant='titleLarge' style={styles.label}>Last Completed</Text>
+                            <Text variant='titleLarge' style={styles.content}> {item.lastCompleted.toDate().toLocaleDateString()} </Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -68,4 +69,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    heading: {
+        textAlign: 'center',
+        marginTop: 15,
+        color: "#011F26",
+    },
+    label: {
+        color: "#026873",
+        marginTop: 20,
+    },
+    content: {
+        color: "#F2668B",
+    }
 })

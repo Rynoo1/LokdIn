@@ -33,8 +33,8 @@ const EditHabit: React.FC<EditProps> = ({ safeWidth, habitItem, onSaveSuccess })
             reminderSlot: slot as TimeSlot,
         };
 
-        // const success = await editHabitData(user.uid, updatedHabit);
-        const success = false;
+        const success = await editHabitData(user.uid, updatedHabit);
+        //const success = false;
 
         if (success) {
             console.log("Habit updated successfully!");

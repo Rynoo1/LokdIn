@@ -108,17 +108,17 @@ function RootNavigator() {
     <NavigationContainer>
       { user ? (
           showDash ? (
-            <stack.Navigator>
+            <stack.Navigator screenOptions={{ contentStyle: { backgroundColor: '#e7effaff' }}}>
               <stack.Screen options={{ headerShown: false }} name='Dashboard' component={Dashboard} />
               <stack.Screen options={{ headerShown: false }} name='Habit' component={Habit} />
             </stack.Navigator>
           ) : (
-            <stack.Navigator>
+            <stack.Navigator screenOptions={{ contentStyle: { backgroundColor: '#e7effaff' }}}>
               <stack.Screen options={{ headerShown: false }} name='QuickAccess' component={QuickUse} />
             </stack.Navigator>
           )
       ) : (
-        <stack.Navigator>
+        <stack.Navigator screenOptions={{ contentStyle: { backgroundColor: '#e7effaff' }}}>
           <stack.Screen name='Login' component={LoginScreen} />
           <stack.Screen name='Register' component={RegisterScreen} />
         </stack.Navigator>

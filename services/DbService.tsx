@@ -193,7 +193,7 @@ export const editHabitData = async (userId: string, habitItem: HabitItem) => {
         await scheduleHabitSlotReminders(allHabits);
         return true
     } catch (error) {
-        console.log('Error ', error);
+        console.error('Error ', error);
         return false
     }
 }

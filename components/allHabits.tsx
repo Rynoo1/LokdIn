@@ -14,15 +14,15 @@ const AllHabits = ({ habitData }: { habitData: ExtendedHabitInfo[] }) => {
 
   return (
     <View>
-        <Text variant='headlineMedium' style={{ textAlign: 'center', marginBottom: 10, marginTop: 15 }}>All Habits</Text>
+        <Text variant='headlineMedium' style={styles.heading}>All Habits</Text>
 
         <View style={styles.container}>
-            <Text variant='titleMedium' style={{ flex: 1 }}> Habit </Text>
-            <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}> Goal </Text>
-            <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}> Current </Text>
-            <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}> Longest </Text>
-            <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}> Journals </Text>
-            <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}> Reminders </Text>
+            <Text variant='titleLarge' style={{ flex: 1, color: styles.titles.color }}> Habit </Text>
+            <Text variant='titleLarge' style={styles.titles}> Goal </Text>
+            <Text variant='titleLarge' style={styles.titles}> Current </Text>
+            <Text variant='titleLarge' style={styles.titles}> Longest </Text>
+            <Text variant='titleLarge' style={styles.titles}> Journals </Text>
+            <Text variant='titleLarge' style={styles.titles}> Reminders </Text>
         </View>
         <ScrollView>
             {habitData.map((item) => (
@@ -35,12 +35,12 @@ const AllHabits = ({ habitData }: { habitData: ExtendedHabitInfo[] }) => {
                 >
                     <View>
                         <TouchableOpacity style={styles.content} onPress={() => navigation.navigate("Habit", { habitId: `${item.id}` })}>
-                            <Text variant='titleMedium' style={{ flex: 1 }}>{item.title}</Text>
-                            <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}>{item.goal}</Text>
-                            <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}>{item.currentStreak}</Text>
-                            <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}>{item.longestStreak}</Text>
-                            <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}>{item.journalCount}</Text>
-                            <Text variant='titleMedium' style={{ flex: 1, textAlign: "center" }}>{item.reminders ? item.reminderSlot : "Off"}</Text>                            
+                            <Text variant='titleLarge' style={styles.label}>{item.title}</Text>
+                            <Text variant='titleLarge' style={styles.items}>{item.goal}</Text>
+                            <Text variant='titleLarge' style={styles.items}>{item.currentStreak}</Text>
+                            <Text variant='titleLarge' style={styles.items}>{item.longestStreak}</Text>
+                            <Text variant='titleLarge' style={styles.items}>{item.journalCount}</Text>
+                            <Text variant='titleLarge' style={styles.items}>{item.reminders ? item.reminderSlot.charAt(0).toUpperCase() + item.reminderSlot.slice(1) : "Off"}</Text>
                         </TouchableOpacity>
 
                     </View>
@@ -64,5 +64,26 @@ const styles = StyleSheet.create({
     content: {
         flexDirection: "row",
         paddingVertical: 8,
+    },
+    titles: {
+        flex: 1,
+        textAlign: 'center',
+        color: "#03A688",
+    },
+    label: {
+        color: "#026873",
+        flex: 1,
+    },
+    items: {
+        color: "#F2668B",
+        flex: 1,
+        textAlign: 'center',
+        fontWeight: 'bold',
+    },
+    heading: {
+        textAlign: 'center', 
+        marginBottom: 10, 
+        marginTop: 15, 
+        color: '#011F26'
     }
 })

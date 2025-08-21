@@ -5,6 +5,7 @@ import { AddHabitItem, createHabit } from '../services/DbService';
 import { Timestamp } from 'firebase/firestore';
 import { useAuth } from '../contexts/authContext';
 import { TimeSlot } from '../utils/timeSlots';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 const AddHabit = ({ onAddSuccess }: { onAddSuccess: () => void }) => {
     const { user } = useAuth();
@@ -57,28 +58,28 @@ const AddHabit = ({ onAddSuccess }: { onAddSuccess: () => void }) => {
     }
 
   return (
-    <View style={{ flex: 1, paddingHorizontal: 20, marginTop: 15 }}>
-        <Text variant='headlineMedium' style={{ textAlign: 'center', paddingBottom: 5 }}>Add Habit</Text>
+    <View style={styles.container}>
+        <Text variant='headlineMedium' style={styles.heading}>Add Habit</Text>
         <View style={{ opacity: showAdd ? 1 : 0.5 }}>
-            <TextInput style={{ marginVertical: 7, marginHorizontal: 40 }} disabled={!showAdd} mode='outlined' label='Title' placeholder='Habit to break' value={title} onChangeText={setTitle} />
-            <TextInput style={{ marginHorizontal: 40 }} disabled={!showAdd} mode='outlined' keyboardType='number-pad' label='Goal' placeholder='Streak Goal' value={goal} onChangeText={setGoal} />
-            <Text variant='titleMedium' style={{ marginVertical: 5, textAlign: 'center', opacity: showAdd ? 1 : 0.5 }}>Reminders?</Text>
-            <Switch style={{ alignSelf: 'center' }} disabled={!showAdd} value={isSwitchOn} onValueChange={() => setIsSwitchOn(!isSwitchOn)} />
+            <TextInput style={{ marginVertical: 7, marginHorizontal: 40 }} activeOutlineColor='#03A688' disabled={!showAdd} mode='outlined' label='Title' placeholder='Habit to break' value={title} onChangeText={setTitle} />
+            <TextInput style={{ marginHorizontal: 40 }} activeOutlineColor='#03A688' disabled={!showAdd} mode='outlined' keyboardType='number-pad' label='Goal' placeholder='Streak Goal' value={goal} onChangeText={setGoal} />
+            <Text style={{ marginVertical: 5, textAlign: 'center', opacity: showAdd ? 1 : 0.5, color: '#011F26' }} variant='titleMedium'>Reminders?</Text>
+            <Switch style={{ alignSelf: 'center' }} color='#03A688' disabled={!showAdd} value={isSwitchOn} onValueChange={() => setIsSwitchOn(!isSwitchOn)} />
             {isSwitchOn && (
                 <SegmentedButtons
                     value={value}
                     onValueChange={setValue}
                     style={{paddingHorizontal: 45, paddingVertical: 10}}
                     buttons={[
-                        {value: 'morning', label: 'Morning'},
-                        {value: 'afternoon', label: 'Afternoon'},
-                        {value: 'evening', label: 'Evening'}
+                        {value: 'morning', label: 'Morning', style: value === 'morning' ? {backgroundColor: '#03A688'} : undefined},
+                        {value: 'afternoon', label: 'Afternoon', style: value === 'afternoon' ? {backgroundColor: '#03A688'} : undefined},
+                        {value: 'evening', label: 'Evening', style: value === 'evening' ? {backgroundColor: '#03A688'} : undefined}
                     ]}
                 />
             )}
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 10 }}>
-                <Button mode='contained-tonal' style={{ flex: 0.2, marginRight: 5 }} disabled={!showAdd} onPress={() => newHabit()}>Submit</Button>
-                <Button mode='contained-tonal' style={{ flex: 0.2, marginLeft: 5 }} disabled={!showAdd} onPress={reset}>Cancel</Button>
+                <Button mode='contained' buttonColor='#F2668B' textColor='#011F26' style={{ flex: 0.2, marginRight: 5 }} disabled={!showAdd} onPress={() => newHabit()}>Submit</Button>
+                <Button mode='contained' buttonColor='#3B94CA' textColor='#011F26' style={{ flex: 0.2, marginLeft: 5 }} disabled={!showAdd} onPress={reset}>Cancel</Button>
             </View>
             
         </View>
@@ -87,12 +88,9 @@ const AddHabit = ({ onAddSuccess }: { onAddSuccess: () => void }) => {
             <FAB
               icon="plus"
               label="Break a new habit"
-              style={{
-                position: 'absolute',
-                alignSelf: 'center',
-                bottom: '50%',
-                transform: [{ translateY: 30}],
-              }}
+              rippleColor='#026873'
+              color='#011F26'
+              style={styles.fab}
               onPress={() => setShowAdd(true)}
             />
         )}
@@ -104,8 +102,20 @@ export default AddHabit
 
 const styles = StyleSheet.create({
     fab: {
-        margin: 160,
-        right: 0,
-        bottom: 0,
-    }
+        position: 'absolute',
+        alignSelf: 'center',
+        bottom: '50%',
+        transform: [{ translateY: 30 }],
+        backgroundColor: '#03A688',
+    },
+    container: {
+        flex: 1,
+        paddingHorizontal: 20,
+        marginTop: 15,
+    },
+    heading: {
+        textAlign: 'center',
+        paddingBottom: 5,
+        color: '#011F26',
+    },
 })
