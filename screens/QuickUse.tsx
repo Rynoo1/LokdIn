@@ -39,12 +39,12 @@ const QuickUse = () => {
 
   return (
     <SafeAreaView style={{flex: 1, margin: 10}}>
-      <Text variant='headlineLarge' style={{ textAlign: 'center' }}>Quick Use</Text>
+      <Text variant='headlineLarge' style={{ textAlign: 'center', color: '#011F26' }}>Quick Use</Text>
       <ScrollView>
         {habitStreaks.map((item) =>(
-            <View key={item.id} style={{flex: 1}}>
-                <Text variant='headlineSmall' style={{textAlign: 'center', marginTop: 20}}>{item.title}</Text>
-                <Button mode='contained' style={{ paddingVertical: 5, marginHorizontal: 10, alignSelf: 'center' }} onPress={() => handleUpdateStreak(user.uid, item.id)}>Increment Streak</Button>
+            <View key={item.id} style={{ flex: 1, marginBottom: 10 }}>
+                <Text variant='headlineSmall' style={{textAlign: 'center', marginTop: 20, color: '#026873'}}>{item.title}</Text>
+                <Button mode='contained' buttonColor='#F2668B' style={{ paddingVertical: 5, marginVertical: 5, alignSelf: 'center' }} onPress={() => handleUpdateStreak(user.uid, item.id)}>Increment Streak</Button>
             </View>
         ))}
       </ScrollView>

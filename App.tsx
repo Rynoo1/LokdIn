@@ -2,20 +2,26 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-import LoginScreen from './screens/LoginScreen';
-import RegisterScreen from './screens/RegisterScreen';
 import { AuthProvider, useAuth } from './contexts/authContext';
-import Dashboard from './screens/Dashboard';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { useEffect, useRef, useState } from 'react';
-import QuickUse from './screens/QuickUse';
-import Habit from './screens/Habit';
-import { Audio } from 'expo-av';
 import * as Notifications from "expo-notifications";
 import { getUserHabits } from './services/DbService';
 import { scheduleHabitSlotReminders } from './services/notificationService';
+import { checkOnboarded, setOnboarded } from './services/onboarding';
 
-const stack = createNativeStackNavigator();
+
+import QuickUse from './screens/QuickUse';
+import Habit from './screens/Habit';
+import Dashboard from './screens/Dashboard';
+import LoginScreen from './screens/LoginScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import Onboarding from './screens/Onboarding';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import OnboardingScreen from './screens/Onboarding';
+
+const ONBOARDING_KEY = "hasOnboarded";
+const Stack = createNativeStackNavigator();
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -32,6 +38,7 @@ function RootNavigator() {
   const [orientation, setOrientation] = useState<ScreenOrientation.Orientation | null>(null);
   const [showDash, setShowDash] = useState(false);
   const subscriptionRef = useRef<ScreenOrientation.Subscription | null>(null);
+  const [hasOnboarded, setHasOnboarded] = useState<boolean | null>(null);
   const hasCheckedOrientation = useRef(false);
 
   useEffect(() => {
@@ -74,6 +81,8 @@ function RootNavigator() {
 
     const init = async () => {
       if (hasCheckedOrientation.current) return;
+      const onboarded = await checkOnboarded();
+      setHasOnboarded(onboarded);
 
       try {
         const currentOrientation = await ScreenOrientation.getOrientationAsync();
@@ -106,22 +115,39 @@ function RootNavigator() {
 
   return (
     <NavigationContainer>
-      { user ? (
+      {!hasOnboarded ? (
+        <Stack.Navigator screenOptions={{contentStyle: { backgroundColor: '#e7effaff'}}}>
+          <Stack.Screen name='Onboarding' options={{ headerShown: false }}>
+            {() => (
+              <OnboardingScreen
+                onSkip={async () => {
+                  await setOnboarded();
+                  setHasOnboarded(true);
+                }}
+                onDone={async () => {
+                  await setOnboarded();
+                  setHasOnboarded(true);
+                }}
+              />
+            )}
+          </Stack.Screen>
+        </Stack.Navigator>
+      ) : user ? (
           showDash ? (
-            <stack.Navigator screenOptions={{ contentStyle: { backgroundColor: '#e7effaff' }}}>
-              <stack.Screen options={{ headerShown: false }} name='Dashboard' component={Dashboard} />
-              <stack.Screen options={{ headerShown: false }} name='Habit' component={Habit} />
-            </stack.Navigator>
+            <Stack.Navigator screenOptions={{ contentStyle: { backgroundColor: '#e7effaff' }}}>
+              <Stack.Screen options={{ headerShown: false }} name='Dashboard' component={Dashboard} />
+              <Stack.Screen options={{ headerShown: false }} name='Habit' component={Habit} />
+            </Stack.Navigator>
           ) : (
-            <stack.Navigator screenOptions={{ contentStyle: { backgroundColor: '#e7effaff' }}}>
-              <stack.Screen options={{ headerShown: false }} name='QuickAccess' component={QuickUse} />
-            </stack.Navigator>
+            <Stack.Navigator screenOptions={{ contentStyle: { backgroundColor: '#e7effaff' }}}>
+              <Stack.Screen options={{ headerShown: false }} name='QuickAccess' component={QuickUse} />
+            </Stack.Navigator>
           )
       ) : (
-        <stack.Navigator screenOptions={{ contentStyle: { backgroundColor: '#e7effaff' }}}>
-          <stack.Screen name='Login' component={LoginScreen} />
-          <stack.Screen name='Register' component={RegisterScreen} />
-        </stack.Navigator>
+        <Stack.Navigator screenOptions={{ contentStyle: { backgroundColor: '#e7effaff' }}}>
+          <Stack.Screen options={{ headerShown: false }} name='Login' component={LoginScreen} />
+          <Stack.Screen options={{ headerShown: false }} name='Register' component={RegisterScreen} />
+        </Stack.Navigator>
       )}
     </NavigationContainer>
   );

@@ -4,7 +4,6 @@ import * as Progress from 'react-native-progress'
 import { checkAndIncrementStreak, getStreak, HabitItem } from '../services/DbService'
 import { useAuth } from '../contexts/authContext'
 import { Button, Text, TextInput } from 'react-native-paper'
-import HabitOverview from './habitOverview'
 import EditHabit from './editHabit'
 
 interface StreakProps {
@@ -17,7 +16,7 @@ const Streaks: React.FC<StreakProps> = ({ habitId, safeWidth, safeHeight }) => {
     const { user } = useAuth();
     const [editing, setEditing] = useState(false);
     const [streakCompletion, setStreakCompletion] = useState(0);
-    const [data, setData] = useState({});
+    const [data, setData] = useState<any>({});
     const [startDate, setStartDate] = useState<string | undefined>('');
     const [loading, setLoading] = useState(true);
 
