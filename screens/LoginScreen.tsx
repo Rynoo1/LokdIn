@@ -47,7 +47,7 @@ const LoginScreen = () => {
             lockToPortrait();
 
         return () => {
-            //ScreenOrientation.unlockAsync();
+            ScreenOrientation.unlockAsync();
             //ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
         };
 

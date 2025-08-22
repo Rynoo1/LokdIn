@@ -33,6 +33,7 @@ const OnboardingScreen = ({ onDone }: OnboardingScreenProps) => {
                 await ScreenOrientation.unlockAsync();
                 await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
             } else {
+                await ScreenOrientation.unlockAsync();
                 console.warn('Portrait lock not supported');
             }
 

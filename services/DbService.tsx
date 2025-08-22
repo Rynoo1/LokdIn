@@ -113,8 +113,9 @@ export const getHabitTitle = async (userId: string, habitId: string) => {
 // get habit title, streak goal and currentstreak for all habits for one user
 export const getAllHabitStreak = async (userId: string): Promise<ExtendedHabitInfo[]> => {
     try {
-        const ref = collection(db, "users", userId, "habits"); 
-        const snapshot = await getDocs(ref);
+        const ref = collection(db, "users", userId, "habits");
+        const q = query(ref, where("completed", "==", false));
+        const snapshot = await getDocs(q);
 
         const habits = snapshot.docs.map(doc => {
             const data = doc.data();
