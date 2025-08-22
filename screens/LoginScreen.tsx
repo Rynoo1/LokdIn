@@ -32,7 +32,7 @@ const LoginScreen = () => {
         useCallback(() => {
             const lockToPortrait = async () => {
                 await ScreenOrientation.unlockAsync();
-                await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+                await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
             };
 
             lockToPortrait();
