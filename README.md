@@ -12,10 +12,10 @@
         <li><a href="#-habit-tracking">Habit Tracking</a></li>
         <li><a href="#-streak-goals">Streak Goals</a></li>
         <li><a href="#-streamlined-updates">Streamlined Updates</a></li>
-        <li><a href="#-audio-journaling">Audio Journaling</a></li>
+        <li><a href="#%EF%B8%8F-audio-journaling">Audio Journaling</a></li>
       </ul>
     </li>
-    <li><a href="#-tech-stack">🛠️Tech Stack</a></li>
+    <li><a href="#%EF%B8%8F-tech-stack">🛠️Tech Stack</a></li>
     <li>
         <a href="#-getting-started">🚀Getting Started</a>
         <ul>
