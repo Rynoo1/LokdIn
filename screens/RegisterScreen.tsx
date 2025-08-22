@@ -16,8 +16,26 @@ const RegisterScreen = () => {
     const navigation = useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
 
     const { registerUser } = useAuth()!;
-    const register = () => {
-        registerUser(email, password);
+
+    const handleError = (error: any) => {
+        const codeParts = error.split('/');
+        let formatted = codeParts[1] || 'Unkown error';
+
+        formatted = formatted
+            .split('-')
+            .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
+        return formatted;
+    };
+
+    const register = async () => {
+        const register = await registerUser(email, password)
+        
+        if (!register.success) {
+            console.log(register.message);
+            alert(handleError(register.message));
+        };
     }
 
     useFocusEffect(

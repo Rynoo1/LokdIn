@@ -5,8 +5,8 @@ import { loginUser, registerUser, logoutUser } from "../services/authService";
 
 interface AuthContextType {
     user: any;
-    loginUser: (email: string, password: string) => void;
-    registerUser: (email: string, password: string) => void;
+    loginUser: (email: string, password: string) => any;
+    registerUser: (email: string, password: string) => any;
     logoutUser: () => void;
 }
 

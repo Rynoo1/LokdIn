@@ -16,17 +16,26 @@ const LoginScreen = () => {
     const [passwordVisible, setPasswordVisible] = useState(false);
 
     const { loginUser } = useAuth()!;
-    const login = () => {
-        loginUser(email, password);
+
+    const handleError = (error: any) => {
+        const codeParts = error.split('/');
+        let formatted = codeParts[1] || 'Unkown error';
+
+        formatted = formatted
+            .split('-')
+            .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
+        return formatted;
+    };
+
+    const login = async () => {
+        const log = await loginUser(email, password)
+
+        if (!log.success) {
+            alert(handleError(log.message));
+        }
     }
-
-    // useEffect(() => {
-    //     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-
-    //     return () => {
-    //         ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
-    //     }
-    // }, []);
 
     useFocusEffect(
         useCallback(() => {

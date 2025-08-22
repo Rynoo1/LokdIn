@@ -8,18 +8,15 @@ const { width } = Dimensions.get("window");
 
 interface OnboardingScreenProps {
     onDone: () => void;
-    onSkip: () => void;
 }
-//03A688
-//026873
-//F2668B
+
 const slides = [
     { id: "1", title: "Welcome", subtitle: "This is", heading: "LokdIn", content: "Build streaks\nBreak habits", backgroundColor: "#011F26", color: "#e7effaff"},
     { id: "2", title: "Track Progress", subtitle: "Record the journey", heading: "", content: "Record audio journals to\ndocument your progress", backgroundColor: "#03A688", color: "#011F26"},
     { id: "3", title: "Build Streaks", subtitle: "Break Habits", heading: "", content: "Complete a habit after\nreaching your streak goal", backgroundColor: "#026873", color: "#011F26"},
 ];
 
-const OnboardingScreen = ({ onDone, onSkip }: OnboardingScreenProps) => {
+const OnboardingScreen = ({ onDone }: OnboardingScreenProps) => {
     const flatListRef = useRef<FlatList>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -50,18 +47,10 @@ const OnboardingScreen = ({ onDone, onSkip }: OnboardingScreenProps) => {
         }
 
     };
-            
+
     useEffect(() => {
         lockToPortrait();
     }, [safeHeight, safeWidth]);
-
-    const handleNext = () => {
-        if (currentIndex < slides.length -1) {
-            flatListRef.current?.scrollToIndex({ index: currentIndex + 1});
-        } else {
-            onDone();
-        }
-    };
 
     const handleScroll = (event: any) => {
         const index = Math.round(event.nativeEvent.contentOffset.x / width);

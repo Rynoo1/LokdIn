@@ -120,10 +120,6 @@ function RootNavigator() {
           <Stack.Screen name='Onboarding' options={{ headerShown: false }}>
             {() => (
               <OnboardingScreen
-                onSkip={async () => {
-                  await setOnboarded();
-                  setHasOnboarded(true);
-                }}
                 onDone={async () => {
                   await setOnboarded();
                   setHasOnboarded(true);
