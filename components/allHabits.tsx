@@ -1,5 +1,5 @@
-import { FlatList, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import { FlatList, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
+import React, { useCallback, useState } from 'react'
 import { ExtendedHabitInfo } from '../types/habit';
 import { getAllHabitStreak } from '../services/DbService';
 import { useAuth } from '../contexts/authContext';
@@ -7,7 +7,7 @@ import { Text } from 'react-native-paper';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { MainStackParamList } from '../types/navigation';
 
-const AllHabits = ({ habitData }: { habitData: ExtendedHabitInfo[] }) => {
+const AllHabits = ({ habitData, refreshing, onRefresh }: { habitData: ExtendedHabitInfo[]; refreshing: boolean; onRefresh: () => void }) => {
 
     const { user } = useAuth();
     const navigation = useNavigation<NavigationProp<MainStackParamList>>();
@@ -24,8 +24,16 @@ const AllHabits = ({ habitData }: { habitData: ExtendedHabitInfo[] }) => {
             <Text variant='titleLarge' style={styles.titles}> Journals </Text>
             <Text variant='titleLarge' style={[styles.titles, {borderRightColor: '#011F26'}]}> Reminders </Text>
         </View>
-        <ScrollView>
-            {habitData.map((item) => (
+        <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+        {(habitData.length === 0) ? (
+            <View style={{padding: 16, borderRadius: 8, alignItems: 'center',}}>
+                <View>
+                    <Text variant='titleLarge' style={{textAlign: 'center'}}>No habits yet</Text>
+                    <Text variant='titleLarge' style={{textAlign: 'center'}}>Pull down to refresh</Text>
+                </View>
+            </View>
+        ) : (
+            habitData.map((item) => (
                 <View
                     key={item.id}
                     style={{
@@ -46,7 +54,8 @@ const AllHabits = ({ habitData }: { habitData: ExtendedHabitInfo[] }) => {
                     </View>
 
                 </View>
-            ))}
+            ))
+        )}
         </ScrollView>
     </View>
   )

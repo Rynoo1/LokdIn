@@ -1,4 +1,4 @@
-import { Animated, Dimensions, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { Animated, Dimensions, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useCallback } from 'react'
 import * as Progress from 'react-native-progress'
 import { HabitStreakInfo } from "../types/habit";
@@ -7,9 +7,9 @@ import { Text } from 'react-native-paper';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { MainStackParamList } from '../types/navigation';
 
-//TODO: display habit name, streak progress and streak goal
+//display habit name, streak progress and streak goal
 
-const DashStreaks = ({ habitStreakData, safeWidth, safeHeight }: { habitStreakData: HabitStreakInfo[]; safeWidth: number; safeHeight: number; }) => {
+const DashStreaks = ({ habitStreakData, safeWidth, safeHeight, refreshing, onRefresh }: { habitStreakData: HabitStreakInfo[]; safeWidth: number; safeHeight: number; refreshing: boolean; onRefresh: () => void }) => {
     const navigation = useNavigation<NavigationProp<MainStackParamList>>();
 
     const streakRenderItem = useCallback(({ item }: { item: HabitStreakInfo}) => {
@@ -42,12 +42,19 @@ const DashStreaks = ({ habitStreakData, safeWidth, safeHeight }: { habitStreakDa
             data={habitStreakData}
             keyExtractor={(item) => item.id}
             renderItem={streakRenderItem}
-            extraData={habitStreakData}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            ListEmptyComponent={
+                <View style={{height: safeHeight}}>
+                    <Text variant='headlineMedium' style={styles.heading}>Streaks</Text>
+                    <Text variant='headlineMedium' style={[styles.label, {textAlign: 'center'}]}>No habits to track yet</Text>
+                    <Text variant='headlineMedium' style={[styles.content, {textAlign: 'center'}]}>Pull down to refresh</Text>
+                </View>
+            }
+            // extraData={habitStreakData}
             snapToInterval={safeHeight}
             showsVerticalScrollIndicator={false}
         />
     </View>
-
   )
 }
 
