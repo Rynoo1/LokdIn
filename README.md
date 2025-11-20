@@ -1,6 +1,8 @@
 # LokdIn
 
-**Build Streaks, Break Habits**
+### Build Streaks, Break Habits
+
+![DashScreens](./assets/DashScreens.png)
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -45,15 +47,18 @@ LokdIn is a habit-breaking app designed to help users overcome unwanted behaviou
 - Celebrate milestones and achievements
 - Visual indicators for goal progression
 
-### 📊 **Streamlined Updates**
-- Easy one-tap streak updates
-- Setup reminder notifications for each habit
-
 ### 🎙️ **Audio Journaling**
 - Record personal reflections for each habit
 - Play back your journey and growth
 - Reflect on your progress and setbacks
 
+![HabitScreens](./assets/HabitScreens.png)
+
+### 📊 **Streamlined Updates**
+- Easy one-tap streak updates
+- Setup reminder notifications for each habit
+
+![QuickUse](LoginQuickUse.png)
 
 ## 🛠️ Tech Stack
 
