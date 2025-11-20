@@ -58,7 +58,7 @@ LokdIn is a habit-breaking app designed to help users overcome unwanted behaviou
 - Easy one-tap streak updates
 - Setup reminder notifications for each habit
 
-![QuickUse](LoginQuickUse.png)
+![QuickUse](./assets/LoginQuickUse.png)
 
 ## 🛠️ Tech Stack
 
