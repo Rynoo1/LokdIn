@@ -8,12 +8,6 @@ import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBcXRqZPINgKNHzV9vBHzCEDmHNWikmIjk",
-  authDomain: "lokdin-57a58.firebaseapp.com",
-  projectId: "lokdin-57a58",
-  storageBucket: "lokdin-57a58.firebasestorage.app",
-  messagingSenderId: "223052389056",
-  appId: "1:223052389056:web:a859846d6106174f372b25"    
 };
 
 // Initialize Firebase
