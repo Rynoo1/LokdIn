@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react'
 import * as Progress from 'react-native-progress'
 import { checkAndIncrementStreak, getStreak, HabitItem } from '../services/DbService'
 import { useAuth } from '../contexts/authContext'
-import { Button, Text, TextInput } from 'react-native-paper'
+import { Appbar, Button, Text, TextInput } from 'react-native-paper'
 import EditHabit from './editHabit'
+import { NavigationProp, useNavigation } from '@react-navigation/native'
+import { MainStackParamList } from '../types/navigation'
 
 interface StreakProps {
     habitId: string;
@@ -14,6 +16,7 @@ interface StreakProps {
 
 const Streaks: React.FC<StreakProps> = ({ habitId, safeWidth, safeHeight }) => {
     const { user } = useAuth();
+    const navigation = useNavigation<NavigationProp<MainStackParamList>>();
     const [editing, setEditing] = useState(false);
     const [streakCompletion, setStreakCompletion] = useState(0);
     const [data, setData] = useState<any>({});
@@ -22,9 +25,11 @@ const Streaks: React.FC<StreakProps> = ({ habitId, safeWidth, safeHeight }) => {
 
     const fetchStreakData = async () => {
         try {
+            console.log('fetching');
             setLoading(true);
             const completion = await getStreak(user?.uid, habitId);
             setStreakCompletion(completion.completion!);
+            console.log("Completion ", completion);
             const habitWithId: HabitItem = {
                 ...completion,
                 id: habitId,
@@ -53,10 +58,13 @@ const Streaks: React.FC<StreakProps> = ({ habitId, safeWidth, safeHeight }) => {
     };
 
   return (
-    <View style={[styles.container2, { width: safeWidth, height: safeHeight }]}>
+    <View style={{ width: safeWidth, height: safeHeight }}>
+        <Appbar.Header style={{ backgroundColor: '#e7effaff' }}>
+            <Appbar.BackAction onPress={() => navigation.goBack} />
+            <Appbar.Content color='#011F26' titleStyle={{ fontSize: 33, lineHeight: 40 }} title="Info" />
+        </Appbar.Header>
         <View style={styles.halvesContainer2}>
             <View style={[styles.half2, { borderRightWidth: 2 }]}>
-              <Text variant='headlineLarge' style={{color: '#011F26'}}> Streak </Text>
               <Button mode='outlined' onPress={updateStreak} textColor='#026873' style={{ marginTop: 15, borderColor: '#03A688', borderWidth: 1.5 }}>Increase Streak</Button>
               <Progress.Circle size={200} color='#F2668B' borderWidth={3} thickness={4} strokeCap='round' indeterminate={false} progress={streakCompletion} showsText={true} style={{marginTop: 20}} />
             </View>

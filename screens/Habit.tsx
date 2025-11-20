@@ -6,7 +6,7 @@ import Journal from '../components/journal';
 import { useRoute, RouteProp, useFocusEffect } from '@react-navigation/native';
 import Streaks from '../components/streaks';
 import { Dimensions } from 'react-native';
-import { Text } from 'react-native-paper';
+import { Appbar, Text } from 'react-native-paper';
 
 type HabitRouteParams = {
     habitId: string;
@@ -53,8 +53,6 @@ const Habit = () => {
             horizontal
             pagingEnabled
             showsHorizontalScrollIndicator={false}
-            snapToInterval={safeWidth}
-            bounces={false}
             renderItem={renderScreens}
             style={{ height: safeHeight, paddingVertical: 10 }}
         />

@@ -1,7 +1,5 @@
-import { FlatList, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
-import React, { useCallback, useState } from 'react'
+import { RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
 import { ExtendedHabitInfo } from '../types/habit';
-import { getAllHabitStreak } from '../services/DbService';
 import { useAuth } from '../contexts/authContext';
 import { Text } from 'react-native-paper';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -14,8 +12,6 @@ const AllHabits = ({ habitData, refreshing, onRefresh }: { habitData: ExtendedHa
 
   return (
     <View>
-        <Text variant='headlineMedium' style={styles.heading}>All Habits</Text>
-
         <View style={styles.container}>
             <Text variant='titleLarge' style={styles.titles}> Habit </Text>
             <Text variant='titleLarge' style={styles.titles}> Goal </Text>
@@ -95,7 +91,7 @@ const styles = StyleSheet.create({
     heading: {
         textAlign: 'center', 
         marginBottom: 10, 
-        marginTop: 15, 
+        marginTop: 15,
         color: '#011F26'
     }
 })

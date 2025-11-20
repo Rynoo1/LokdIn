@@ -1,8 +1,7 @@
-import { Animated, Dimensions, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native'
 import React, { useCallback } from 'react'
 import * as Progress from 'react-native-progress'
 import { HabitStreakInfo } from "../types/habit";
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from 'react-native-paper';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { MainStackParamList } from '../types/navigation';
@@ -15,7 +14,7 @@ const DashStreaks = ({ habitStreakData, safeWidth, safeHeight, refreshing, onRef
     const streakRenderItem = useCallback(({ item }: { item: HabitStreakInfo}) => {
         return (
             <View style={{height: safeHeight}}>
-                <Text variant='headlineMedium' style={styles.heading}>{item.title} Streak</Text>
+                <Text variant='headlineSmall' style={styles.heading}>{item.title}</Text>
                 <View style={styles.halvesContainer}>
                     <View style={[styles.container, { width: safeWidth }]}>
                         <TouchableOpacity style={[styles.half, { width: safeWidth }]} onPress={() => navigation.navigate("Habit", { habitId: `${item.id}` })}>
@@ -37,7 +36,7 @@ const DashStreaks = ({ habitStreakData, safeWidth, safeHeight, refreshing, onRef
     }, [safeWidth, navigation]);
 
   return (
-    <View style={[styles.container, { width: safeWidth }]}>
+    <View style={[styles.container, { width: safeWidth, height: safeHeight }]}>
         <FlatList
             data={habitStreakData}
             keyExtractor={(item) => item.id}
@@ -45,14 +44,14 @@ const DashStreaks = ({ habitStreakData, safeWidth, safeHeight, refreshing, onRef
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
             ListEmptyComponent={
                 <View style={{height: safeHeight}}>
-                    <Text variant='headlineMedium' style={styles.heading}>Streaks</Text>
                     <Text variant='headlineMedium' style={[styles.label, {textAlign: 'center'}]}>No habits to track yet</Text>
                     <Text variant='headlineMedium' style={[styles.content, {textAlign: 'center'}]}>Pull down to refresh</Text>
                 </View>
             }
             // extraData={habitStreakData}
-            snapToInterval={safeHeight}
+            pagingEnabled
             showsVerticalScrollIndicator={false}
+            contentInsetAdjustmentBehavior="never"
         />
     </View>
   )
@@ -73,12 +72,10 @@ const styles = StyleSheet.create({
     },
     half: {
         flex: 1,
-        justifyContent: 'center',
         alignItems: 'center',
     },
     heading: {
         textAlign: 'center',
-        marginTop: 15,
         color: "#011F26",
     },
     label: {

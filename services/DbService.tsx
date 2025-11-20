@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, increment, query, Timestamp, updateDoc, where } from "firebase/firestore"
+import { addDoc, collection, doc, getDoc, getDocs, increment, query, Timestamp, updateDoc, where, writeBatch } from "firebase/firestore"
 import { db } from "../firebase"
 import { ExtendedHabitInfo, HabitStreakInfo } from "../types/habit"
 import { scheduleHabitSlotReminders } from "./notificationService";
@@ -13,6 +13,7 @@ export interface HabitItem {
     endDate?: Timestamp,
     currentStreak?: number,
     longestStreak?: number,
+    lastCompleted: Timestamp,
     completed?: boolean,
     completion?: number,
     dateStarted?: Timestamp,
@@ -42,6 +43,17 @@ export interface UserStreakData {
     currentStreak: number;
     dataLastStreak: Timestamp;
 }
+
+function toDateSafe(value: any): Date | null {
+  if (!value) return null;
+  // Firestore Timestamp has toDate()
+  if (typeof value.toDate === "function") return value.toDate();
+  if (value instanceof Date) return value;
+  // fallback: try new Date()
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? null : d;
+}
+
 
 // function to create new habit
 export const createHabit = async (userId: string, habit: AddHabitItem) => {
@@ -180,6 +192,7 @@ export const getStreak = async (userId: string, habitId: string): Promise<HabitI
         reminders: streakData.remindersOn,
         reminderSlot: streakData.reminderSlot,
         completion: completion,
+        lastCompleted: streakData.dateLastStreak,
         dateStarted: streakData.startDate,
         currentStreak: streakData.currentStreak,
         longestStreak: streakData.longestStreak,
@@ -212,6 +225,74 @@ export const editHabitData = async (userId: string, habitItem: HabitItem) => {
         return false
     }
 }
+
+export const checkStreak = async (userId: string, habitId: string) => {
+    const streakRef = doc(db, "users", userId, "habits", habitId);
+    const streakSnap = await getDoc(streakRef);
+    
+    if (!streakSnap.exists()) {
+        throw new Error('Habit doc not found');
+    }
+
+    const streakData = streakSnap.data();
+    const { dateLastStreak } = streakData;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const lastStreakDate = dateLastStreak.toDate();
+    lastStreakDate.setHours(0, 0, 0, 0);
+
+    const daysDifference = Math.floor((today.getTime() - lastStreakDate.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (daysDifference > 1) {
+        await updateDoc(streakRef, {
+            currentStreak: 0,
+        });
+        return {
+            streakReset: true,
+            message: "Streak broken! Starting fresh at day 0"
+        };
+    } else {
+        return {
+            streakReset: false,
+            message: "Streak is intact"
+        };
+    }
+};
+
+
+
+type CheckResult = {
+  shouldReset: boolean;
+  message: string;
+};
+
+export const checkStreakFromData = (docData: any): CheckResult => {
+  const { dateLastStreak } = docData ?? {};
+
+  const lastStreakDate = toDateSafe(dateLastStreak);
+  if (!lastStreakDate) {
+    // If there's no last date, treat as not broken (or decide differently)
+    return { shouldReset: false, message: "No last date — leaving as is" };
+  }
+
+  // zero out time so we compare dates only
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  lastStreakDate.setHours(0, 0, 0, 0);
+
+  const daysDifference = Math.floor((today.getTime() - lastStreakDate.getTime()) / (1000 * 60 * 60 * 24));
+
+  if (daysDifference > 1) {
+    return { shouldReset: true, message: "Streak broken! Starting fresh at day 0" };
+  } else {
+    return { shouldReset: false, message: "Streak is intact" };
+  }
+};
+
+
+
 
 // check when last the streak has been incremented and either update or reset streak
 export const checkAndIncrementStreak = async (userId: string, habitId: string) => {
@@ -306,5 +387,78 @@ export const checkAndIncrementStreak = async (userId: string, habitId: string) =
         };
     }
 };
+
+
+
+export const getAllHabitStreakAndFix = async (userId: string): Promise<ExtendedHabitInfo[]> => {
+  try {
+    const ref = collection(db, "users", userId, "habits");
+    const q = query(ref, where("completed", "==", false));
+    const snapshot = await getDocs(q);
+
+    const batch = writeBatch(db);
+    let needsCommit = false;
+
+    const habits = snapshot.docs.map(docSnap => {
+      const data = docSnap.data();
+      const check = checkStreakFromData(data);
+
+      // prepare local copy for return
+      const currentStreak = typeof data.currentStreak === "number" ? data.currentStreak : 0;
+      const goal = typeof data.goal === "number" ? data.goal : 1;
+      const completion = currentStreak / goal;
+
+      // If broken, queue reset and update local copy
+      if (check.shouldReset && currentStreak !== 0) {
+        batch.update(doc(db, "users", userId, "habits", docSnap.id), { currentStreak: 0 });
+        needsCommit = true;
+
+        return {
+          id: docSnap.id,
+          title: data.title as string,
+          goal,
+          currentStreak: 0, // reflect reset
+          completion: 0 / goal,
+          lastCompleted: data.dateLastStreak,
+          journalCount: data.journalCount,
+          completed: data.completed,
+          longestStreak: data.longestStreak,
+          reminders: data.remindersOn,
+          reminderSlot: data.reminderSlot,
+        } as ExtendedHabitInfo;
+      } else {
+        // not reset — return as-is
+        return {
+          id: docSnap.id,
+          title: data.title as string,
+          goal,
+          currentStreak,
+          completion,
+          lastCompleted: data.dateLastStreak,
+          journalCount: data.journalCount,
+          completed: data.completed,
+          longestStreak: data.longestStreak,
+          reminders: data.remindersOn,
+          reminderSlot: data.reminderSlot,
+        } as ExtendedHabitInfo;
+      }
+    });
+
+    if (needsCommit) {
+      // Firestore batch limit: 500. If you might exceed it, split into multiple batches.
+      await batch.commit();
+    }
+
+    return habits;
+
+  } catch (error) {
+    console.error("Error getting all tasks streak info: ", error);
+    return [];
+  }
+};
+
+
+
+
 
 //TODO: function to mark it as complete (both manully triggered and automatically -- there could be a prompt once completed to ask the user if they want to extend the goal or mark it as complete)

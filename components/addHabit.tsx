@@ -59,7 +59,6 @@ const AddHabit = ({ onAddSuccess }: { onAddSuccess: () => void }) => {
 
   return (
     <View style={styles.container}>
-        <Text variant='headlineMedium' style={styles.heading}>Add Habit</Text>
         <View style={{ opacity: showAdd ? 1 : 0.5 }}>
             <TextInput style={{ marginVertical: 7, marginHorizontal: 40 }} activeOutlineColor='#03A688' disabled={!showAdd} mode='outlined' label='Title' placeholder='Habit to break' value={title} onChangeText={setTitle} />
             <TextInput style={{ marginHorizontal: 40 }} activeOutlineColor='#03A688' disabled={!showAdd} mode='outlined' keyboardType='number-pad' label='Goal' placeholder='Streak Goal' value={goal} onChangeText={setGoal} />
@@ -78,8 +77,8 @@ const AddHabit = ({ onAddSuccess }: { onAddSuccess: () => void }) => {
                 />
             )}
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 10 }}>
-                <Button mode='contained' buttonColor='#F2668B' style={{ flex: 0.2, marginRight: 5 }} disabled={!showAdd} onPress={() => newHabit()}>Submit</Button>
-                <Button mode='contained' buttonColor='#3B94CA' style={{ flex: 0.2, marginLeft: 5 }} disabled={!showAdd} onPress={reset}>Cancel</Button>
+                <Button mode='outlined' textColor='#A61723' style={{ flex: 0.3, marginLeft: 5, borderColor: '#bb0e1cff', borderWidth: 2 }} disabled={!showAdd} onPress={reset}>Cancel</Button>
+                <Button mode='contained' buttonColor='#3B94CA' style={{ flex: 0.3, marginRight: 5, borderWidth: 2 }} disabled={!showAdd} onPress={() => newHabit()}>Submit</Button>
             </View>
             
         </View>

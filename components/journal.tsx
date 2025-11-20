@@ -1,13 +1,13 @@
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native'
+import { FlatList, StyleSheet, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { startRecording, stopRecording, toggleAudio } from '../services/audioService';
 import { useAuth } from '../contexts/authContext';
 import { uploadAudio } from '../services/bucketService';
 import { getHabitJournals, getHabitTitle } from '../services/DbService';
-import { Dimensions } from 'react-native';
-import { Button } from 'react-native-paper';
+import { Appbar, Button } from 'react-native-paper';
 import { Text } from 'react-native-paper';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { MainStackParamList } from '../types/navigation';
 
 interface JournalProps {
     habitId: string;
@@ -16,6 +16,7 @@ interface JournalProps {
 
 const Journal: React.FC<JournalProps> = ({ habitId, safeWidth }) => {
   const { user } = useAuth();
+  const navigation = useNavigation<NavigationProp<MainStackParamList>>();
   const [isRecording, setIsRecording] = useState(false);
   const [status, setStatus] = useState("");
   const [journalEntries, setJournalEntries] = useState<any[]>([]);
@@ -88,38 +89,36 @@ const Journal: React.FC<JournalProps> = ({ habitId, safeWidth }) => {
   };
 
   return (
-    <View style={[styles.container, { width: safeWidth }]}>
-
-        <Text variant='headlineMedium' style={styles.heading}>{habitName} Journal </Text>
-
+    <View style={{ flex: 1, width: safeWidth }}>
+        <Appbar.Header style={{ backgroundColor: '#e7effaff' }} >
+            <Appbar.BackAction onPress={() => navigation.goBack()} />
+            <Appbar.Content color='#011F26' titleStyle={{ fontSize: 33, lineHeight: 40 }} title={`${habitName} Journal`} />
+        </Appbar.Header>
         <View style={styles.halvesContainer}>
             <View style={styles.half}>
                 {journalEntries.length === 0 ? (
                     <Text variant='headlineSmall' style={{ textAlign: 'center' }}> No journal entries yet </Text>
                 ) : (
-                    // <View>
-
-                        <FlatList
-                            style={{ width: '100%' }}
-                            contentContainerStyle={{ alignItems: 'center' }}
-                            data={journalEntries}
-                            keyExtractor={(item) => item.id}
-                            renderItem={({ item }) => {
-                                const isPlaying = currentlyPlaying === item.id;
-
-                                return (
-                                    <Button 
-                                        icon={isPlaying ? "pause" : "play"}
-                                        mode='outlined'
-                                        textColor='#026873'
-                                        onPress={() => handleToggle(item.id, item.audioUrl)}
-                                        style={{ margin: 5, borderColor: '#03A688', borderWidth: 1.5 }}
-                                    >
-                                        {item.name}
-                                    </Button>
-                                );
-                            }}
-                        />
+                    <FlatList
+                        style={{ width: '100%' }}
+                        contentContainerStyle={{ alignItems: 'center' }}
+                        data={journalEntries}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => {
+                            const isPlaying = currentlyPlaying === item.id;
+                            return (
+                                <Button 
+                                    icon={isPlaying ? "pause" : "play"}
+                                    mode='outlined'
+                                    textColor='#026873'
+                                    onPress={() => handleToggle(item.id, item.audioUrl)}
+                                    style={{ margin: 5, borderColor: '#03A688', borderWidth: 1.5 }}
+                                >
+                                    {item.name}
+                                </Button>
+                            );
+                        }}
+                    />
 
                 )}
 
